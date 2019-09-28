@@ -25,3 +25,15 @@ assert(isequal(bFun.variate,x));
 assert(isequal(bFun.domain,[-1 1]));
 assert(isequal(bFun.basis(1), (1-x)/2));
 assert(isequal(bFun.basis(2), (1+x)/2));
+
+x = sym('x','real');
+bFun = basisFunction("Lagrange",2,x);
+assert(bFun.name == "Lagrange");
+assert(isequal(bFun.degree,2));
+assert(isequal(bFun.variate,x));
+assert(isequal(bFun.domain,[-1 1]));
+assert(all(isAlways(bFun.basis(1) == (x^2 - x)/2)));
+assert(all(isAlways(bFun.basis(2) == 1-x^2)));
+assert(all(isAlways(bFun.basis(3) == (x^2 + x)/2)));
+
+
