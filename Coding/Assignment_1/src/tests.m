@@ -57,4 +57,26 @@ assert(isAlways(bFun.basis(2) ==  (27/16)*x^3 - (9/16)*x^2 - (27/16)*x + 9/16));
 assert(isAlways(bFun.basis(3) == -(27/16)*x^3 - (9/16)*x^2 + (27/16)*x + 9/16));
 assert(isAlways(bFun.basis(4) ==  ( 9/16)*x^3 + (9/16)*x^2 - ( 1/16)*x - 1/16));
 
+%% Construct Finite Elements
+clear
+
+nElems = 10;
+elemDegree = 1;
+bFun = basisFunction("Lagrange",1,sym('x','real'));
+[eCONN,x] = generateMesh(0,2,nElems,elemDegree);
+ELEM = createElements(eCONN,x,bFun);
+
+for ii = 1:nElems
+    assert(isfield(ELEM(ii),"GDomain"));
+    assert(isfield(ELEM(ii),"GNodes"));
+    assert(isfield(ELEM(ii),"GDOF"));
+    assert(isfield(ELEM(ii),"GBasisFuns"));
+    assert(isfield(ELEM(ii),"GInterpFun"));
+    
+    assert(isfield(ELEM(ii),"LDomain"));
+    assert(isfield(ELEM(ii),"LNodes"));
+    assert(isfield(ELEM(ii),"LDOF"));
+    assert(isfield(ELEM(ii),"LBasisFuns"));
+    assert(isfield(ELEM(ii),"LInterpFun"));
+end
 
