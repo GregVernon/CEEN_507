@@ -59,13 +59,14 @@ assert(isAlways(bFun.basis(4) ==  ( 9/16)*x^3 + (9/16)*x^2 - ( 1/16)*x - 1/16));
 
 %% Construct Finite Elements
 clear
-
-nElems = 10;
+%%%%% Test simple 1 element mesh
+nElems = 1;
 elemDegree = 1;
 bFun = basisFunction("Lagrange",1,sym('x','real'));
-[eCONN,x] = generateMesh(0,2,nElems,elemDegree);
+[eCONN,x] = generateMesh(0,1,nElems,elemDegree);
 ELEM = createElements(eCONN,x,bFun);
 
+% Test for proper field names
 for ii = 1:nElems
     assert(isfield(ELEM(ii),"GDomain"));
     assert(isfield(ELEM(ii),"GNodes"));
@@ -80,3 +81,16 @@ for ii = 1:nElems
     assert(isfield(ELEM(ii),"LInterpFun"));
 end
 
+% Check Global Definition
+assert(isequal(ELEM(1).GDomain,[0 1]))
+assert(isequal(ELEM(1).GNodes, [0 1]))
+assert(isequal(ELEM(1).GDOF,[1; 1]))
+assert(all(polynomialDegree(ELEM(1).GBasisFuns) == elemDegree))
+assert(all(polynomialDegree(ELEM(1).GInterpFun) == elemDegree))
+
+% Check Local Definition
+assert(isequal(ELEM(1).LDomain,[-1 1]))
+assert(isequal(ELEM(1).LNodes, [-1 1]))
+assert(isequal(ELEM(1).LDOF,[1; 1]))
+assert(all(polynomialDegree(ELEM(1).LBasisFuns) == elemDegree))
+assert(all(polynomialDegree(ELEM(1).LInterpFun) == elemDegree))
