@@ -59,10 +59,10 @@ assert(isAlways(bFun.basis(4) ==  ( 9/16)*x^3 + (9/16)*x^2 - ( 1/16)*x - 1/16));
 
 %% Construct Finite Elements
 clear
-%%%%% Test simple 1 element mesh
+%%%%% Test simple 1 element mesh %%%%%
 nElems = 1;
 elemDegree = 1;
-bFun = basisFunction("Lagrange",1,sym('x','real'));
+bFun = basisFunction("Lagrange",elemDegree,sym('x','real'));
 [eCONN,x] = generateMesh(0,1,nElems,elemDegree);
 ELEM = createElements(eCONN,x,bFun);
 
@@ -89,6 +89,54 @@ assert(all(polynomialDegree(ELEM(1).GBasisFuns) == elemDegree))
 assert(all(polynomialDegree(ELEM(1).GInterpFun) == elemDegree))
 
 % Check Local Definition
+assert(isequal(ELEM(1).LDomain,[-1 1]))
+assert(isequal(ELEM(1).LNodes, [-1 1]))
+assert(isequal(ELEM(1).LDOF,[1; 1]))
+assert(all(polynomialDegree(ELEM(1).LBasisFuns) == elemDegree))
+assert(all(polynomialDegree(ELEM(1).LInterpFun) == elemDegree))
+
+%%%%% Test simple 2 element mesh %%%%%
+nElems = 2;
+elemDegree = 1;
+bFun = basisFunction("Lagrange",elemDegree,sym('x','real'));
+[eCONN,x] = generateMesh(0,2,nElems,elemDegree);
+ELEM = createElements(eCONN,x,bFun);
+
+% Test for proper field names
+for ii = 1:nElems
+    assert(isfield(ELEM(ii),"GDomain"));
+    assert(isfield(ELEM(ii),"GNodes"));
+    assert(isfield(ELEM(ii),"GDOF"));
+    assert(isfield(ELEM(ii),"GBasisFuns"));
+    assert(isfield(ELEM(ii),"GInterpFun"));
+    
+    assert(isfield(ELEM(ii),"LDomain"));
+    assert(isfield(ELEM(ii),"LNodes"));
+    assert(isfield(ELEM(ii),"LDOF"));
+    assert(isfield(ELEM(ii),"LBasisFuns"));
+    assert(isfield(ELEM(ii),"LInterpFun"));
+end
+
+% Check Global Definition
+assert(isequal(ELEM(1).GDomain,[0 1]))
+assert(isequal(ELEM(1).GNodes, [0 1]))
+assert(isequal(ELEM(1).GDOF,[1; 1]))
+assert(all(polynomialDegree(ELEM(1).GBasisFuns) == elemDegree))
+assert(all(polynomialDegree(ELEM(1).GInterpFun) == elemDegree))
+
+assert(isequal(ELEM(2).GDomain,[1 2]))
+assert(isequal(ELEM(2).GNodes, [1 2]))
+assert(isequal(ELEM(2).GDOF,[1; 1]))
+assert(all(polynomialDegree(ELEM(1).GBasisFuns) == elemDegree))
+assert(all(polynomialDegree(ELEM(1).GInterpFun) == elemDegree))
+
+% Check Local Definition
+assert(isequal(ELEM(1).LDomain,[-1 1]))
+assert(isequal(ELEM(1).LNodes, [-1 1]))
+assert(isequal(ELEM(1).LDOF,[1; 1]))
+assert(all(polynomialDegree(ELEM(1).LBasisFuns) == elemDegree))
+assert(all(polynomialDegree(ELEM(1).LInterpFun) == elemDegree))
+
 assert(isequal(ELEM(1).LDomain,[-1 1]))
 assert(isequal(ELEM(1).LNodes, [-1 1]))
 assert(isequal(ELEM(1).LDOF,[1; 1]))
