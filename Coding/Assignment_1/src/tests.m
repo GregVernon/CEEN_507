@@ -1,3 +1,10 @@
+%% Main FEM function
+% Simply test to see if it runs without errors
+nElems = 10;
+elemDegree = 1;
+loadCase = 1;
+assert(main(nElems,elemDegree,loadCase))
+
 %% Mesh Generation
 % Create mesh "LM" array per Hughes 1.14
 [eCONN,x] = generateMesh(0,2,2,1);
