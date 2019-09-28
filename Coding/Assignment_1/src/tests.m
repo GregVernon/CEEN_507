@@ -59,7 +59,7 @@ assert(isAlways(bFun.basis(4) ==  ( 9/16)*x^3 + (9/16)*x^2 - ( 1/16)*x - 1/16));
 
 %% Construct Finite Elements
 clear
-%%%%% Test simple 1 element mesh %%%%%
+%%%%% Test linear, one-element mesh %%%%%
 nElems = 1;
 elemDegree = 1;
 bFun = basisFunction("Lagrange",elemDegree,sym('x','real'));
@@ -95,7 +95,7 @@ assert(isequal(ELEM(1).LDOF,[1; 1]))
 assert(all(polynomialDegree(ELEM(1).LBasisFuns) == elemDegree))
 assert(all(polynomialDegree(ELEM(1).LInterpFun) == elemDegree))
 
-%%%%% Test simple 2 element mesh %%%%%
+%%%%% Test linear, two-element mesh %%%%%
 nElems = 2;
 elemDegree = 1;
 bFun = basisFunction("Lagrange",elemDegree,sym('x','real'));
