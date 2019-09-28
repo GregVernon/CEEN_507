@@ -32,9 +32,9 @@ assert(bFun.name == "Lagrange");
 assert(isequal(bFun.degree,2));
 assert(isequal(bFun.variate,x));
 assert(isequal(bFun.domain,[-1 1]));
-assert(all(isAlways(bFun.basis(1) == (x^2 - x)/2)));
-assert(all(isAlways(bFun.basis(2) == 1-x^2)));
-assert(all(isAlways(bFun.basis(3) == (x^2 + x)/2)));
+assert(isAlways(bFun.basis(1) == (x^2 - x)/2));
+assert(isAlways(bFun.basis(2) == 1-x^2));
+assert(isAlways(bFun.basis(3) == (x^2 + x)/2));
 
 x = sym('x','real');
 bFun = basisFunction("Lagrange",3,x);
@@ -42,9 +42,9 @@ assert(bFun.name == "Lagrange");
 assert(isequal(bFun.degree,3));
 assert(isequal(bFun.variate,x));
 assert(isequal(bFun.domain,[-1 1]));
-assert(all(isAlways(bFun.basis(1) == -( 9/16)*x^3 + (9/16)*x^2 + ( 1/16)*x - 1/16)));
-assert(all(isAlways(bFun.basis(2) ==  (27/16)*x^3 - (9/16)*x^2 - (27/16)*x + 9/16)));
-assert(all(isAlways(bFun.basis(3) == -(27/16)*x^3 - (9/16)*x^2 + (27/16)*x + 9/16)));
-assert(all(isAlways(bFun.basis(4) ==  ( 9/16)*x^3 + (9/16)*x^2 - ( 1/16)*x - 1/16)));
+assert(isAlways(bFun.basis(1) == -( 9/16)*x^3 + (9/16)*x^2 + ( 1/16)*x - 1/16));
+assert(isAlways(bFun.basis(2) ==  (27/16)*x^3 - (9/16)*x^2 - (27/16)*x + 9/16));
+assert(isAlways(bFun.basis(3) == -(27/16)*x^3 - (9/16)*x^2 + (27/16)*x + 9/16));
+assert(isAlways(bFun.basis(4) ==  ( 9/16)*x^3 + (9/16)*x^2 - ( 1/16)*x - 1/16));
 
 
