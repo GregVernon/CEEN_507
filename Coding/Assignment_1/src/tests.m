@@ -226,3 +226,10 @@ assert(isequal(ELEM(2).LNodes, [-1 0 1]))
 assert(isequal(ELEM(2).LDOF,[1; 1; 1]))
 assert(all(polynomialDegree(ELEM(2).LBasisFuns) == elemDegree))
 assert(all(polynomialDegree(ELEM(2).LInterpFun) == elemDegree))
+
+%% Gauss Legendre Quadrature
+Family="Gauss-Legendre";
+n=1;
+[P,W]=Quadrature(Family,n)
+assert(P==0);
+assert(W==2);
