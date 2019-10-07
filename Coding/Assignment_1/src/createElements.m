@@ -3,7 +3,8 @@ function ELEM = createElements(eCONN,nodes,local_bFun)
 % Get information about local basis function
 Family = local_bFun.name;
 degree = local_bFun.degree;
-variate = sym('x','real');%local_bFun.variate;
+localVariate = local_bFun.variate;
+globalVariate = sym('x','real');
 
 % Preallocate the array of structures
 nELEM = size(eCONN,2);
@@ -28,7 +29,7 @@ for e = 1:nELEM
     ELEM(e).GDomain = [nodes(eCONN(1,e)) nodes(eCONN(end,e))];
     ELEM(e).GNodes  = nodes(eCONN(:,e));
     ELEM(e).GDOF    = ones(length(ELEM(e).GNodes),1);
-    global_bFun = basisFunction(Family,degree,variate,ELEM(e).GDomain);
+    global_bFun = basisFunction(Family,degree,globalVariate,ELEM(e).GDomain);
     ELEM(e).GBasisFuns = global_bFun.basis;
     ELEM(e).GInterpFun = global_bFun.basis' * ELEM(e).GNodes';
 end
@@ -44,20 +45,18 @@ end
 
 % Create mappings ?(x) <-> x(?)
 for e = 1:nELEM
-    xi_x = computeAffineMapping(ELEM(e).LDomain, ELEM(e).GDomain);
-    x_xi = computeAffineMapping(ELEM(e).GDomain, ELEM(e).LDomain);
+    xi_x = computeAffineMapping(ELEM(e).LDomain, ELEM(e).GDomain, globalVariate);
+    x_xi = computeAffineMapping(ELEM(e).GDomain, ELEM(e).LDomain, localVariate);
     ELEM(e).GlobalVariate_to_LocalVariate = xi_x;
     ELEM(e).LocalVariate_to_GlobalVariate = x_xi;
 end
 
 end
 
-function F = computeAffineMapping(TargetSpace, Domain)
-A = [1 Domain(1); 1 Domain(2)];
+function F = computeAffineMapping(TargetSpace, Preimage, Domain)
+A = [1 Preimage(1); 1 Preimage(2)];
 b = [TargetSpace(1); TargetSpace(2)];
 c = A\b;
 
-syms F(x)
-F = c(1) + c(2)*x;
-
+F = c(1) + c(2)*Domain;
 end
