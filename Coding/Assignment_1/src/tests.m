@@ -230,12 +230,46 @@ assert(all(polynomialDegree(ELEM(2).LInterpFun) == elemDegree))
 %% Gauss Legendre Quadrature
 Family="Gauss-Legendre";
 n=1;
-[P,W]=Quadrature(Family,n)
-assert(P==0);
-assert(W==2);
+[P,W]=Quadrature(Family,n);
+assert(isAlways(P==0));
+assert(isAlways(W==2));
 
 %% Legendre Basis Polynomials
+% Degree = 0
 Family = "Legendre";
-p=1;
-variate=sym("k");
-bFun=basisFunction(Family,p,variate);
+p = 0;
+variate = sym("x");
+bFun = basisFunction(Family,p,variate);
+assert(isAlways(bFun.basis==sym(1)))
+
+% Degree = 1
+Family = "Legendre";
+p = 1;
+variate = sym("x");
+bFun = basisFunction(Family,p,variate);
+assert(isAlways(bFun.basis==variate))
+
+% Degree = 2
+Family = "Legendre";
+p = 2;
+variate = sym("x");
+bFun = basisFunction(Family,p,variate);
+assert(isAlways(bFun.basis==str2sym("(1/2) * (3*x^2 - 1)")))
+
+% Verify orthonormality
+Family = "Legendre";
+variate = sym("x");
+for m = 0:5
+    for n = 0:5
+        Pm = basisFunction(Family,m,variate);
+        Pn = basisFunction(Family,n,variate);
+        DefInt = int(Pm.basis*Pn.basis,[-1 1]);
+        if m == n
+            kronDelta = 1;
+        else
+            kronDelta = 0;
+        end
+        condition = 2 / ((2*n)+1) * kronDelta;
+        assert(isAlways(abs(DefInt-condition)<=eps(10)))
+    end
+end
