@@ -39,7 +39,7 @@ for e = 1:nELEM
     ELEM(e).LNodes  = local_bFun.nodes;
     ELEM(e).LDOF    = ones(length(ELEM(e).LNodes),1);
     ELEM(e).LBasisFuns = local_bFun.basis;
-    ELEM(e).LInterpFun = local_bFun.basis .* ELEM(e).LDOF;
+    ELEM(e).LInterpFun = local_bFun.basis' * ELEM(e).LNodes';
 end
 
 % Create mappings ?(x) <-> x(?)
