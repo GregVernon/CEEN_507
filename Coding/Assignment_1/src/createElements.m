@@ -13,12 +13,14 @@ for e = nELEM: -1 : 1
     ELEM(e).GDOF = [];
     ELEM(e).GBasisFuns = [];
     ELEM(e).GInterpFun = [];
+    ELEM(e).GlobalVariate_to_LocalVariate = [];
     
     ELEM(e).LDomain = [];
     ELEM(e).LNodes = [];
     ELEM(e).LDOF = [];
     ELEM(e).LBasisFuns = [];
     ELEM(e).LInterpFun = [];
+    ELEM(e).LocalVariate_to_GlobalVariate = [];
 end
 
 % Create Global Definitions
@@ -40,5 +42,22 @@ for e = 1:nELEM
     ELEM(e).LInterpFun = local_bFun.basis .* ELEM(e).LDOF;
 end
 
+% Create mappings ?(x) <-> x(?)
+for e = 1:nELEM
+    xi_x = computeAffineMapping(ELEM(e).LDomain, ELEM(e).GDomain);
+    x_xi = computeAffineMapping(ELEM(e).GDomain, ELEM(e).LDomain);
+    ELEM(e).GlobalVariate_to_LocalVariate = xi_x;
+    ELEM(e).LocalVariate_to_GlobalVariate = x_xi;
+end
+
+end
+
+function F = computeAffineMapping(TargetSpace, Domain)
+A = [1 Domain(1); 1 Domain(2)];
+b = [TargetSpace(1); TargetSpace(2)];
+c = A\b;
+
+syms F(x)
+F = c(1) + c(2)*x;
 
 end
