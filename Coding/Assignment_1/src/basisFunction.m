@@ -12,9 +12,9 @@ function bFun = lagrangeBasis(p,variate,domain)
 node = linspace(domain(1), domain(2), p+1);
 basis = sym('L',[p+1,1]);
 
-for ii=1:p+1
+for ii=1:p+1  % ii is the current nodal basis function we're building
     basis(ii)=sym(1);
-    for jj=1:p+1
+    for jj=1:p+1 % jj is evaluating the product series for the current node
         if ii==jj
         else
             basis(ii) = basis(ii)*((variate-node(jj))/(node(ii)-node(jj)));
