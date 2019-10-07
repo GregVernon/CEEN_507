@@ -233,3 +233,9 @@ n=1;
 [P,W]=Quadrature(Family,n)
 assert(P==0);
 assert(W==2);
+
+%% Legendre Basis Polynomials
+Family = "Legendre";
+p=1;
+variate=sym("k");
+bFun=basisFunction(Family,p,variate);
