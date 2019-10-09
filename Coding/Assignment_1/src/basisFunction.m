@@ -1,6 +1,8 @@
 function bFun = basisFunction(Family, p, variate)
 if Family == "Lagrange"
     bFun = lagrangeBasis(p,variate);
+elseif Family == "Legendre"
+    bFun = legendreBasis(p,variate);
 end
 end
 
@@ -30,4 +32,20 @@ bFun.variate = variate;
 bFun.domain = domain;
 bFun.nodes = node;
 bFun.basis = basis;
+end
+%% LEGENDRE BASIS FUNCTIONS
+% https://en.wikipedia.org/wiki/Legendre_polynomials#Rodrigues'_formula_and_other_explicit_formulas
+function bFun = legendreBasis(p,variate)
+domain = [-1 1];
+n = p; %Maintain consistent documentation
+x = variate;
+
+P = 1/((2^n)*factorial(n))*diff((x^2-1)^n,x,n);
+P = simplify(P);
+
+bFun.name = "Legendre";
+bFun.degree = n;
+bFun.variate = variate;
+bFun.domain = domain;
+bFun.basis = P;
 end

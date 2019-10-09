@@ -226,3 +226,121 @@ assert(isequal(ELEM(2).LNodes, [-1 0 1]))
 assert(isequal(ELEM(2).LDOF,[1; 1; 1]))
 assert(all(polynomialDegree(ELEM(2).LBasisFuns) == elemDegree))
 assert(all(polynomialDegree(ELEM(2).LInterpFun) == elemDegree))
+
+%% Legendre Basis Polynomials
+% Degree = 0
+Family = "Legendre";
+p = 0;
+variate = sym("x");
+bFun = basisFunction(Family,p,variate);
+assert(isAlways(bFun.basis==sym(1)))
+
+% Degree = 1
+Family = "Legendre";
+p = 1;
+variate = sym("x");
+bFun = basisFunction(Family,p,variate);
+assert(isAlways(bFun.basis==variate))
+
+% Degree = 2
+Family = "Legendre";
+p = 2;
+variate = sym("x");
+bFun = basisFunction(Family,p,variate);
+assert(isAlways(bFun.basis==str2sym("(1/2) * (3*x^2 - 1)")))
+
+% Verify orthonormality
+Family = "Legendre";
+variate = sym("x");
+for m = 0:5
+    for n = 0:5
+        Pm = basisFunction(Family,m,variate);
+        Pn = basisFunction(Family,n,variate);
+        DefInt = int(Pm.basis*Pn.basis,[-1 1]);
+        if m == n
+            kronDelta = 1;
+        else
+            kronDelta = 0;
+        end
+        condition = 2 / ((2*n)+1) * kronDelta;
+        assert(isAlways(abs(DefInt-condition)<=eps(10)))
+    end
+end
+
+%% Gauss-Legendre Quadrature
+clear
+Family="Gauss-Legendre";
+
+% One-point Quadrature
+n=1;
+[p,w]=Quadrature(Family,n);
+
+P = sym(0);
+W = sym(2);
+
+assert(isAlways(p==P))
+assert(isAlways(w==W))
+
+% Two-point Quadrature
+n = 2;
+[p,w]=Quadrature(Family,n);
+
+P = [str2sym("-1/sqrt(3)"); ...
+     str2sym("1/sqrt(3)")];
+        
+W = [sym(1); ...
+     sym(1)];
+
+assert(all(isAlways(p==P)))
+assert(all(isAlways(w==W)))
+
+% Three-point Quadrature
+n = 3;
+[p,w]=Quadrature(Family,n);
+
+P = [str2sym("-sqrt(3/5)"); ... 
+     str2sym("0"); ...
+     str2sym("sqrt(3/5)")];
+
+W = [str2sym("5/9"); ...
+     str2sym("8/9"); ...
+     str2sym("5/9")];
+ 
+assert(all(isAlways(p==P)))
+assert(all(isAlways(w==W)))
+
+% Four-point Quadrature
+n = 4;
+[p,w]=Quadrature(Family,n);
+
+P = [str2sym("-sqrt(3/7+2/7*sqrt(6/5))"); ...
+     str2sym("-sqrt(3/7-2/7*sqrt(6/5))"); ...
+     str2sym("sqrt(3/7-2/7*sqrt(6/5))"); ...
+     str2sym("sqrt(3/7+2/7*sqrt(6/5))")];
+         
+W = [str2sym("(18-sqrt(30))/36"); ...
+     str2sym("(18+sqrt(30))/36"); ...
+     str2sym("(18+sqrt(30))/36"); ...
+     str2sym("(18-sqrt(30))/36")];
+         
+assert(all(isAlways(p==P)))
+assert(all(isAlways(w==W)))
+
+% Five-point Quadrature
+n = 5;
+[p,w]=Quadrature(Family,n);
+
+P = [str2sym("-1/3*sqrt(5+2*sqrt(10/7))"); ...
+     str2sym("-1/3*sqrt(5-2*sqrt(10/7))"); ...
+     str2sym("0"); ...
+     str2sym("1/3*sqrt(5-2*sqrt(10/7))"); ...
+     str2sym("1/3*sqrt(5+2*sqrt(10/7))")];
+          
+W = [str2sym("(322-13*sqrt(70))/900"); ...
+     str2sym("(322+13*sqrt(70))/900"); ...
+     str2sym("128/225"); ...
+     str2sym("(322+13*sqrt(70))/900"); ...
+     str2sym("(322-13*sqrt(70))/900")];
+
+assert(all(isAlways(p==P)))
+assert(all(isAlways(w==W)))
