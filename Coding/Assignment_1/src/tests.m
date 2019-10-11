@@ -3,7 +3,7 @@
 nElems = 10;
 elemDegree = 1;
 loadCase = 1;
-assert(main(nElems,elemDegree,loadCase))
+% assert(main(nElems,elemDegree,loadCase));
 
 %% Mesh Generation
 % Create mesh "LM" array per Hughes 1.14
@@ -31,8 +31,8 @@ assert(isequal(bFun.degree,1));
 assert(isequal(bFun.variate,x));
 assert(isequal(bFun.domain,[-1 1]));
 assert(isequal(bFun.nodes, [-1 1]));
-assert(isequal(bFun.basis(1), (1-x)/2));
-assert(isequal(bFun.basis(2), (1+x)/2));
+assert(all(isAlways(formula(bFun.basis) == [(1-x)/2; ...
+                                            (1+x)/2])));
 
 x = sym('x','real');
 bFun = basisFunction("Lagrange",2,x,[-1 1]);
@@ -41,9 +41,9 @@ assert(isequal(bFun.degree,2));
 assert(isequal(bFun.variate,x));
 assert(isequal(bFun.domain,[-1 1]));
 assert(isequal(bFun.nodes, [-1 0 1]));
-assert(isAlways(bFun.basis(1) == (x^2 - x)/2));
-assert(isAlways(bFun.basis(2) == 1-x^2));
-assert(isAlways(bFun.basis(3) == (x^2 + x)/2));
+assert(all(isAlways(formula(bFun.basis) == [(x^2 - x)/2;...
+                                            1-x^2;...
+                                            (x^2 + x)/2])));
 
 x = sym('x','real');
 bFun = basisFunction("Lagrange",3,x,[-1 1]);
@@ -52,10 +52,10 @@ assert(isequal(bFun.degree,3));
 assert(isequal(bFun.variate,x));
 assert(isequal(bFun.domain,[-1 1]));
 assert(isequal(bFun.nodes, [-1 -1/3 1/3 1]));
-assert(isAlways(bFun.basis(1) == -( 9/16)*x^3 + (9/16)*x^2 + ( 1/16)*x - 1/16));
-assert(isAlways(bFun.basis(2) ==  (27/16)*x^3 - (9/16)*x^2 - (27/16)*x + 9/16));
-assert(isAlways(bFun.basis(3) == -(27/16)*x^3 - (9/16)*x^2 + (27/16)*x + 9/16));
-assert(isAlways(bFun.basis(4) ==  ( 9/16)*x^3 + (9/16)*x^2 - ( 1/16)*x - 1/16));
+assert(all(isAlways(formula(bFun.basis) == [-( 9/16)*x^3 + (9/16)*x^2 + ( 1/16)*x - 1/16;...
+                                             (27/16)*x^3 - (9/16)*x^2 - (27/16)*x + 9/16;...
+                                            -(27/16)*x^3 - (9/16)*x^2 + (27/16)*x + 9/16;...
+                                             ( 9/16)*x^3 + (9/16)*x^2 - ( 1/16)*x - 1/16;])));
 
 %% Construct Finite Elements
 clear

@@ -17,5 +17,6 @@ function [P,W] = computeGaussLegendre(n)
     P = bRoots(sIDX);
     
     % Compute weights
-    W = 2 ./ ((1-P.^2) .* subs(diff(bFun.basis),sym('x','real'),P).^2);
+    bFun.basis_deriv = diff(bFun.basis);
+    W = 2 ./ ((1-P.^2) .* bFun.basis_deriv(P).^2);
 end
