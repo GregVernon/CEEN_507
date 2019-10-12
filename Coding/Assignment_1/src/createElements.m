@@ -15,6 +15,7 @@ for e = nELEM:-1:1
     ELEM(e).GNodes  = nodes(eCONN(:,e));
     ELEM(e).GDOF    = ones(length(ELEM(e).GNodes),1);
     global_bFun = basisFunction(Family,degree,globalVariate,ELEM(e).GDomain);
+    ELEM(e).GbFun = global_bFun;
     ELEM(e).GBasisFuns(globalVariate) = global_bFun.basis;
     ELEM(e).GInterpFun(globalVariate) = global_bFun.basis' * ELEM(e).GNodes';
 end
@@ -24,6 +25,7 @@ for e = nELEM:-1:1
     ELEM(e).LDomain = local_bFun.domain;
     ELEM(e).LNodes  = local_bFun.nodes;
     ELEM(e).LDOF    = ones(length(ELEM(e).LNodes),1);
+    ELEM(e).LbFun = local_bFun;
     ELEM(e).LBasisFuns(localVariate) = local_bFun.basis;
 	ELEM(e).LDerivBasisFuns = diff(ELEM(e).LBasisFuns(localVariate));
     ELEM(e).LInterpFun(localVariate) = local_bFun.basis' * ELEM(e).LNodes';
