@@ -25,6 +25,7 @@ for e = nELEM:-1:1
     ELEM(e).LNodes  = local_bFun.nodes;
     ELEM(e).LDOF    = ones(length(ELEM(e).LNodes),1);
     ELEM(e).LBasisFuns(localVariate) = local_bFun.basis;
+	ELEM(e).LDerivBasisFuns = diff(ELEM(e).LBasisFuns(localVariate));
     ELEM(e).LInterpFun(localVariate) = local_bFun.basis' * ELEM(e).LNodes';
 end
 
