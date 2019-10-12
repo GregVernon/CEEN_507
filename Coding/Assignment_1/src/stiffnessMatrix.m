@@ -7,10 +7,10 @@ nLocalNodes = bFun.degree + 1;
 k = sym(zeros(nLocalNodes,nLocalNodes,nELEM));
 for e = 1:nELEM
     for A = 1:nLocalNodes
-        dNA = ELEM(e).LDerivBasisFun(A);
+        dNA = ELEM(e).LDerivBasisFuns(A);
         for B = 1:nLocalNodes
-            dNB = ELEM(e).LDerivBasisFun(B);
-            k(A,B,e) = int(dNA*dNB,ELEM(e).Ldomain);
+            dNB = ELEM(e).LDerivBasisFuns(B);
+            k(A,B,e) = int(dNA*dNB,ELEM(e).LDomain);
         end
     end
 end
@@ -26,13 +26,5 @@ for e = 1:nELEM
                K(gID1,gID2) = K(gID1,gID2) + k(n1,n2,e);
            end
     end
-end
-
-% Things to fix: define symbolic functions
-        
-        
-       
-            
-    
-    
+end   
     
