@@ -37,6 +37,8 @@ for e = nELEM:-1:1
     x_xi = computeAffineMapping(ELEM(e).GDomain, ELEM(e).LDomain, localVariate);
     ELEM(e).GlobalVariate_to_LocalVariate = xi_x;
     ELEM(e).LocalVariate_to_GlobalVariate = x_xi;
+    ELEM(e).Jacobian_Global_to_LocalVariate = diff(xi_x);
+    ELEM(e).Jacobian_Local_to_GlobalVariate = diff(x_xi);
 end
 
 end
