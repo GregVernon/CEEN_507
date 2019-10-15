@@ -16,7 +16,7 @@ elseif method == "Gauss-Quadrature"
     [P,W] = Quadrature("Gauss-Legendre",3);
     for e = 1:nELEM
         localExactSolution = exactSolution.U(ELEM(e).LocalVariate_to_GlobalVariate);
-        localExactSolution = symfun(localExactSolution, sym('x','real'));
+        localExactSolution = symfun(localExactSolution, sym('xi','real'));
         localApproxSolution = ELEM(e).LBasisFuns' * ELEM(e).LDOF;
         
         errFun = abs(localExactSolution - localApproxSolution)^2 * diff(ELEM(e).LocalVariate_to_GlobalVariate);
