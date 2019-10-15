@@ -36,8 +36,7 @@ F = forceVector(ELEM,eCONN,f);
 
 % Solve the system of equations
 d = K\F;
-d = [d(1:(BC.U.Node-1)); BC.U.val; d(BC.U.Node+1:end)];
-
+d = [d(1:(BC.U.Node-1)); BC.U.val; d(BC.U.Node:end)];
 
 % Assemble the solution
 [U,ELEM] = assembleSolution(ELEM,eCONN,d);
