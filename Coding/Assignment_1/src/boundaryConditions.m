@@ -26,7 +26,7 @@ for e = 1:nElem
     for n = 1:nLocalNodes
         dNA = ELEM(e).LDerivBasisFuns(n);
         gID = eCONN(n,e);
-        F(gID) = F(gID) - int(dNA * dNg,ELEM(e).LDomain) * JAC;
+        F(gID) = F(gID) - g * int(dNA * dNg,ELEM(e).LDomain) * JAC;
     end
     
     % Apply h
