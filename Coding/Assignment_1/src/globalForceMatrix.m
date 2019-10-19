@@ -4,8 +4,8 @@ nELEM = length(ELEM);
 bFun = ELEM(1).LbFun;
 nLocalNodes = bFun.degree + 1;
 % Exact integration method
-f = sym(zeros(nLocalNodes,nELEM))
-DNB = ELEM(nLocalNodes).LDerivBasisFuns(nLocalNodes)
+f = sym(zeros(nLocalNodes,nELEM));
+DNB = ELEM(nLocalNodes).LDerivBasisFuns(nLocalNodes);
 for e = 1:nELEM
     % JAC = ELEM(e).Jacobian_Global_to_LocalVariate;
     Ne = formula(ELEM(e).LBasisFuns);
