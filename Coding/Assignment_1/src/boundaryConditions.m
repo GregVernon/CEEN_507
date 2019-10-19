@@ -72,4 +72,3 @@ K(:,BC.U.gNodeID) = [];
 % Define the Kd=F relationship
 K * d == F;
 end
-
