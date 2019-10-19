@@ -1,4 +1,4 @@
-function [F,f] = stiffnessMatrix(ELEM,eCONN,fun)
+function [F,f] = globalForceMatrix(ELEM,eCONN,fun)
 nELEM = length(ELEM);
 % Build local matrices for each element
 bFun = ELEM(1).LbFun;
