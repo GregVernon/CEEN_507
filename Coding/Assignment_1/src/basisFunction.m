@@ -12,14 +12,14 @@ end
 % http://evoq-eval.siam.org/Portals/0/Publications/SIURO/Vol1_Issue1/A_Simple_Expression_for_Multivariate.pdf?ver=2018-03-30-130233-050
 function bFun = lagrangeBasis(p,variate,domain)
 node = linspace(domain(1), domain(2), p+1);
-basis = sym('L',[p+1,1]);
 
+basis = cell(p+1,1);
 for ii=1:p+1  % ii is the current nodal basis function we're building
-    basis(ii)=sym(1);
+    basis{ii}(variate)=sym(1);
     for jj=1:p+1 % jj is evaluating the product series for the current node
         if ii==jj
         else
-            basis(ii) = basis(ii)*((variate-node(jj))/(node(ii)-node(jj)));
+            basis{ii}(variate) = basis{ii}*((variate-node(jj))/(node(ii)-node(jj)));
         end
     end
 end
@@ -30,7 +30,7 @@ bFun.degree = p;
 bFun.variate = variate;
 bFun.domain = domain;
 bFun.nodes = node;
-bFun.basis = basis;
+bFun.basis = transpose([basis{:}]);
 end
 %% LEGENDRE BASIS FUNCTIONS
 % https://en.wikipedia.org/wiki/Legendre_polynomials#Rodrigues'_formula_and_other_explicit_formulas
@@ -39,8 +39,8 @@ domain = [-1 1];
 n = p; %Maintain consistent documentation
 x = variate;
 
-P = 1/((2^n)*factorial(n))*diff((x^2-1)^n,x,n);
-P = simplify(P);
+P(x) = 1/((2^n)*factorial(n))*diff((x^2-1)^n,x,n);
+P(x) = simplify(P);
 
 bFun.name = "Legendre";
 bFun.degree = n;
