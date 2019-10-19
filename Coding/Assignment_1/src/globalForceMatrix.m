@@ -18,7 +18,7 @@ for e = 1:nELEM
 end
 
 nGlobalNodes = max(max(eCONN));
-F = sym(zeros(nGlobalNodes));
+F = sym(zeros(nGlobalNodes, 1));
 for e = 1:nELEM
     JAC = ELEM(e).Jacobian_Global_to_LocalVariate;
     for n1 = 1:nLocalNodes
