@@ -46,4 +46,7 @@ feSolution.Elements = ELEM;
 feSolution.Mesh.Connectivity = eCONN;
 feSolution.Mesh.Nodes = nodes;
 feSolution.U = U;
+feSolution.LinearSystem.K = K;
+feSolution.LinearSystem.F = F;
+feSolution.LinearSystem.d = d;
 end
