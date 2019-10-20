@@ -24,13 +24,12 @@ for e = 1:nELEM
         dNG = sym(0);
     end
     
-    dNe = formula(ELEM(e).LBasisFuns);
-    JAC = ELEM(e).Jacobian_Local_to_GlobalVariate;
+    dNe = formula(ELEM(e).LDerivBasisFuns);
+    JAC = ELEM(e).Jacobian_Global_to_LocalVariate;
     nLocalNodes = length(ELEM(e).LNodes);
     for A = 1:nLocalNodes
         dNA = dNe(A);
-        gTerm = int(dNA*dNG,ELEM(e).LDomain)*g;
-        F(A) = F(A) - gTerm*JAC; % VERIFY
+        gTerm = g * int(dNA*dNG * JAC,ELEM(e).LDomain);
         globalNodeID = eCONN(A,e);
         F(globalNodeID) = F(globalNodeID) - gTerm; % VERIFY
     end
@@ -51,13 +50,16 @@ for e = 1:nELEM
     % Apply h
     [isInElement,idx] = ismember(BC.dU.gNodeID,eCONN(:,e));
     if isInElement == true
-        NH = Ne(idx);
-    else
-        NH = sym(0);
+        nLocalNodes = length(ELEM(e).LNodes);
+        for n = 1:nLocalNodes
+            if n == idx
+                Nh = Ne(n);
+                Nh = symfun(Nh,symvar(Nh)); % Turn into symbolic function
+                hTerm = Nh(ELEM(e).LNodes(n)) * h;
+                F(BC.dU.gNodeID) = F(BC.dU.gNodeID) - hTerm;
+            end
+        end
     end
-    JAC = ELEM(e).Jacobian_Local_to_GlobalVariate;
-    hTerm = NH*h; % VERIFY
-    F(BC.dU.gNodeID) = F(BC.dU.gNodeID) - hTerm*JAC;
 end
 % Reconstruct new d matrix with g-value inserted at correct node
 % d = [d(1:gBCNode-1); g; d(gBCNode+1:1)];
