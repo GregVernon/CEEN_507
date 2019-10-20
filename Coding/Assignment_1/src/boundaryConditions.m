@@ -31,6 +31,8 @@ for e = 1:nELEM
         dNA = dNe(A);
         gTerm = int(dNA*dNG,ELEM(e).LDomain)*g;
         F(A) = F(A) - gTerm*JAC; % VERIFY
+        globalNodeID = eCONN(A,e);
+        F(globalNodeID) = F(globalNodeID) - gTerm; % VERIFY
     end
 end
 
