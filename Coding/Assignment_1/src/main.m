@@ -30,11 +30,11 @@ bFun = basisFunction("Lagrange", elemDegree, sym("xi","real"), [-1 1]);
 ELEM = createElements(eCONN,nodes,bFun);
 
 % Construct linear system of equations
-K = stiffnessMatrix(ELEM,eCONN);
-F = forceVector(ELEM,eCONN,f);
+K = stiffnessMatrix(ELEM,eCONN,"GaussQuadrature");
+F = forceVector(ELEM,eCONN,f,"GaussQuadrature");
 
 % Apply boundary conditions
-[K,F,BC] = boundaryConditions(K,F,BC,ELEM,eCONN,nodes);
+[K,F,BC] = boundaryConditions(K,F,BC,ELEM,eCONN,nodes,"GaussQuadrature");
 
 % Solve the system of equations
 d = K\F;

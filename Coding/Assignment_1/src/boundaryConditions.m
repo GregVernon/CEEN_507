@@ -1,4 +1,4 @@
-function [K, F, BC] = boundaryConditions(K, F, BC, ELEM, eCONN, nodes)
+function [K, F, BC] = boundaryConditions(K, F, BC, ELEM, eCONN, nodes, method)
 %% Incorporate Boundary Conditions
 
 % Create matrix of d variables
@@ -16,6 +16,7 @@ BC.U.gNodeID = find(isAlways(subs(gLoc,lhs(gLoc), nodes)));
 % Subtract the g terms from the F matrix
 nELEM = length(ELEM);
 for e = 1:nELEM
+    bFun = ELEM(e).LbFun;
     % Apply g
     [isInElement,idx] = ismember(BC.U.gNodeID,eCONN(:,e));
     if isInElement == true
@@ -29,7 +30,19 @@ for e = 1:nELEM
     nLocalNodes = length(ELEM(e).LNodes);
     for A = 1:nLocalNodes
         dNA = dNe(A);
-        gTerm = g * int(dNA*dNG * JAC,ELEM(e).LDomain);
+        if method == "Exact"
+            gTerm = g * int(dNA*dNG * JAC, sym("xi"), ELEM(e).LDomain);
+        elseif method == "GaussQuadrature"
+            nPoints = ceil((bFun.degree+1)/2);
+            [P,W] = Quadrature("Gauss-Legendre",nPoints+1);
+            gTerm = sym(0);
+            dNA = symfun(dNA,sym("xi"));
+            dNG = symfun(dNG,sym("xi"));
+            integrand = dNA * dNG * formula(JAC);
+            for ii = 1:length(P)
+                gTerm = gTerm + g * W(ii) * integrand(P(ii));
+            end
+        end
         globalNodeID = eCONN(A,e);
         F(globalNodeID) = F(globalNodeID) - gTerm; % VERIFY
     end
