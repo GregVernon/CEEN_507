@@ -1,8 +1,8 @@
-function exactSolution = computeExactSolution(f)
+function exactSolution = computeExactSolution(f,g,h)
 syms u(x)
 eqn = diff(u,x,2) + f == 0;
 Du = diff(u,x);
-cond = [u(1)==0, Du(0)==0];
+cond = [u(1)==g, Du(0)==h];
 U(x) = dsolve(eqn,cond);
 
 exactSolution.f = f;
