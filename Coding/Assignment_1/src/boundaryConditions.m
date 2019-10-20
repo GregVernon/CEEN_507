@@ -34,7 +34,7 @@ for e = 1:nELEM
             gTerm = g * int(dNA*dNG * JAC, sym("xi"), ELEM(e).LDomain);
         elseif method == "GaussQuadrature"
             nPoints = ceil((bFun.degree+1)/2);
-            [P,W] = Quadrature("Gauss-Legendre",nPoints+1);
+            [P,W] = Quadrature("Gauss-Legendre",nPoints);
             gTerm = sym(0);
             dNA = symfun(dNA,sym("xi"));
             dNG = symfun(dNG,sym("xi"));
