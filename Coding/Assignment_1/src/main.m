@@ -1,22 +1,24 @@
-function feSolution = main(nElem, elemDegree, loadCase)
+function feSolution = main(nElem, elemDegree, f, g, h)
 % Define problem domain
 x = sym("x","real");
 xMin = 0;
 xMax = 1;
 
 % Define Load-Case
-if loadCase == 1
-    q = sym(1);
-    f(x) = q;
-elseif loadCase == 2
-    f(x) = x;
-elseif loadCase == 3
-    f(x) = x^2;
-end
+%%%%% Example inputs
+% if loadCase == 1
+%     q = sym(1);
+%     f(x) = q;
+% elseif loadCase == 2
+%     f(x) = x;
+% elseif loadCase == 3
+%     f(x) = x^2;
+% end
+% 
+% % Define boundary conditions
+% g = sym(1); 
+% h = sym(0.25);
 
-% Define boundary conditions
-g = 0;
-h = 0;
 BC.U.location = x==1;
 BC.U.val = g;
 BC.dU.location = x == 0;
