@@ -53,36 +53,3 @@ for loadCase = 1:length(F)
     end
 end
 fclose(fOut);
-
-%% Analysis & Plotting
-% clear
-% Exact = load('exact_2.mat');
-% n = 0;
-% for ii = 9:16
-%     n = n+1;
-%     Approx{n,1} = matfile("approx_"+num2str(ii)+".mat");
-% end
-% 
-% % Plot Error vs nElem
-% for ii = 1:8
-%     err(ii) = Approx{ii}.Error;
-%     nElem(ii) = Approx{ii}.NumElements;
-% end
-% loglog(nElem,err,'k')
-% 
-% 
-% %% Load Case 2
-% clear
-% Exact = load('exact_2.mat');
-% n = 0;
-% for ii = 17:24
-%     n = n+1;
-%     Approx{n,1} = matfile("approx_"+num2str(ii)+".mat");
-% end
-% 
-% % Plot Error vs nElem
-% for ii = 1:8
-%     err(ii) = Approx{ii}.Error;
-%     nElem(ii) = Approx{ii}.NumElements;
-% end
-% loglog(nElem,err,'k')
