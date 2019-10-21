@@ -5,6 +5,11 @@ end
 end
 
 function [P,W] = computeGaussLegendre(n)
+    if n == 0
+        P = sym(0);
+        W = sym(2);
+        return
+    end
     bFun = basisFunction("Legendre",n,sym('x','real'));
     
     % Find the roots of the Legendre basis function
