@@ -13,6 +13,17 @@ gLoc = BC.U.location;
 % gNodeID -> Global Node ID
 BC.U.gNodeID = find(isAlways(subs(gLoc,lhs(gLoc), nodes)));
 
+% Precompute Gauss Quadrature rules
+ii = 0;
+for n = 9:-1:0
+    ii = ii+1;
+    [P,W] = Quadrature("Gauss-Legendre",n);
+    GQ(ii).P = P;
+    GQ(ii).W = W;
+    GQ(ii).nPoints = n;
+    GQ(ii).maxDegree = 2*n - 1;
+end
+
 % Subtract the g terms from the F matrix
 nELEM = length(ELEM);
 for e = 1:nELEM
@@ -33,11 +44,10 @@ for e = 1:nELEM
         if method == "Exact"
             gTerm = g * int(dNA*dNG * JAC, sym("xi"), ELEM(e).LDomain);
         elseif method == "GaussQuadrature"
-            nPoints = ceil((bFun.degree+1)/2);
             dNA = symfun(dNA,sym("xi"));
             dNG = symfun(dNG,sym("xi"));
             integrand = dNA * dNG * formula(JAC);
-            gTerm = g * numericalQuadrature(integrand);
+            gTerm = g * numericalQuadrature(integrand,GQ);
         end
         globalNodeID = eCONN(A,e);
         F(globalNodeID) = F(globalNodeID) - gTerm; % VERIFY

@@ -16,8 +16,16 @@ if method == "Exact"
         end
     end
 elseif method == "GaussQuadrature"
-    nPoints = ceil((bFun.degree+1)/2);
-    [P,W] = Quadrature("Gauss-Legendre",nPoints);
+    % Precompute Gauss Quadrature rules
+    ii = 0;
+    for n = 9:-1:0
+        ii = ii+1;
+        [P,W] = Quadrature("Gauss-Legendre",n);
+        GQ(ii).P = P;
+        GQ(ii).W = W;
+        GQ(ii).nPoints = n;
+        GQ(ii).maxDegree = 2*n - 1;
+    end
     f = sym(zeros(nLocalNodes,nELEM));
     for e = 1:nELEM
         Ne = formula(ELEM(e).LBasisFuns);
@@ -26,7 +34,7 @@ elseif method == "GaussQuadrature"
             NA = Ne(A);
             NA = symfun(NA,symvar(NA));
             integrand = NA*fun(ELEM(e).LocalVariate_to_GlobalVariate)*JAC;
-            f(A,e) = numericalQuadrature(integrand);
+            f(A,e) = numericalQuadrature(integrand, GQ);
         end
     end
 end

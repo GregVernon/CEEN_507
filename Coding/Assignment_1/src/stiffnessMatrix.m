@@ -17,6 +17,17 @@ if method == "Exact"
         end
     end
 elseif method == "GaussQuadrature"
+    % Precompute Gauss Quadrature rules
+    ii = 0;
+    for n = 9:-1:0
+        ii = ii+1;
+        [P,W] = Quadrature("Gauss-Legendre",n);
+        GQ(ii).P = P;
+        GQ(ii).W = W;
+        GQ(ii).nPoints = n;
+        GQ(ii).maxDegree = 2*n - 1;
+    end
+    
     k = sym(zeros(nLocalNodes,nLocalNodes,nELEM));
     for e = 1:nELEM
         for A = 1:nLocalNodes
@@ -26,7 +37,7 @@ elseif method == "GaussQuadrature"
                 dNB = ELEM(e).LDerivBasisFuns(B);
                 dNB = symfun(dNB,sym("xi"));
                 integrand = dNA*dNB;
-                k(A,B,e) = numericalQuadrature(integrand);
+                k(A,B,e) = numericalQuadrature(integrand,GQ);
             end
         end
     end
