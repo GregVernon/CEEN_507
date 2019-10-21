@@ -26,9 +26,7 @@ elseif method == "GaussQuadrature"
             NA = Ne(A);
             NA = symfun(NA,symvar(NA));
             integrand = NA*fun(ELEM(e).LocalVariate_to_GlobalVariate)*JAC;
-            for ii = 1:length(P)
-                f(A,e) = f(A,e) + W(ii) * integrand(P(ii));
-            end
+            f(A,e) = numericalQuadrature(integrand);
         end
     end
 end

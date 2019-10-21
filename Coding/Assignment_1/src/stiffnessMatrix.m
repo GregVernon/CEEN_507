@@ -17,8 +17,6 @@ if method == "Exact"
         end
     end
 elseif method == "GaussQuadrature"
-    nPoints = ceil((bFun.degree+1)/2);
-    [P,W] = Quadrature("Gauss-Legendre",nPoints);
     k = sym(zeros(nLocalNodes,nLocalNodes,nELEM));
     for e = 1:nELEM
         for A = 1:nLocalNodes
@@ -28,9 +26,7 @@ elseif method == "GaussQuadrature"
                 dNB = ELEM(e).LDerivBasisFuns(B);
                 dNB = symfun(dNB,sym("xi"));
                 integrand = dNA*dNB;
-                for ii = 1:length(P)
-                    k(A,B,e) = k(A,B,e) + W(ii) * integrand(P(ii));
-                end
+                k(A,B,e) = numericalQuadrature(integrand);
             end
         end
     end

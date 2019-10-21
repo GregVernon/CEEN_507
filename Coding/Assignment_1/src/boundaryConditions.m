@@ -34,14 +34,10 @@ for e = 1:nELEM
             gTerm = g * int(dNA*dNG * JAC, sym("xi"), ELEM(e).LDomain);
         elseif method == "GaussQuadrature"
             nPoints = ceil((bFun.degree+1)/2);
-            [P,W] = Quadrature("Gauss-Legendre",nPoints);
-            gTerm = sym(0);
             dNA = symfun(dNA,sym("xi"));
             dNG = symfun(dNG,sym("xi"));
             integrand = dNA * dNG * formula(JAC);
-            for ii = 1:length(P)
-                gTerm = gTerm + g * W(ii) * integrand(P(ii));
-            end
+            gTerm = g * numericalQuadrature(integrand);
         end
         globalNodeID = eCONN(A,e);
         F(globalNodeID) = F(globalNodeID) - gTerm; % VERIFY
