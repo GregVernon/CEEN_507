@@ -9,9 +9,8 @@ if method == "Exact"
         localExactSolution = exactSolution.U(ELEM(e).LocalVariate_to_GlobalVariate) * ELEM(e).Jacobian_Local_to_GlobalVariate;
         localApproxSolution = ELEM(e).LBasisFuns' * ELEM(e).LDOF;
         elemErr = int((localExactSolution - localApproxSolution)^2 , ELEM(e).GDomain);
-        err = err + sqrt(elemErr);
+        err = err + elemErr;
     end
-    err = simplify(err);
 elseif method == "Gauss-Quadrature"
     err = sym(0);
     [P,W] = Quadrature("Gauss-Legendre",9);
@@ -25,8 +24,8 @@ elseif method == "Gauss-Quadrature"
         for ii = 1:length(P)
             elemErr = elemErr + W(ii) * errFun(P(ii));
         end
-        err = err + sqrt(elemErr);
+        err = err + elemErr;
     end
-%     err = simplify(err);
 end
+err = sqrt(err);
 end
