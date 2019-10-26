@@ -63,8 +63,12 @@ classdef bspline
             obj.basis.functions = simplify(N{end});
         end
         
-        function [obj,T] = bezierExtraction(obj)
-            newContinuity = [-1 -1*ones(1,length(obj.nodes)-2) -1];
+        function [obj,T] = bezierExtraction(obj,method)
+            if method == "Hughes"
+                newContinuity = [-1 -1*ones(1,length(obj.nodes)-2) -1];
+            elseif method == "Scott"
+                newContinuity = [-1 -1*ones(1,length(obj.nodes)-2) -1];
+            end
             newKnotVector = repelem(obj.nodes,[obj.degree-newContinuity]);
             
             KV = obj.knotVector;
