@@ -3,6 +3,8 @@ if Family == "Lagrange"
     bFun = lagrangeBasis(p,variate,domain);
 elseif Family == "Legendre"
     bFun = legendreBasis(p,variate);
+elseif Family == "Bernstein"
+    bFun = bernsteinBasis(p,variate);
 end
 end
 
@@ -47,4 +49,24 @@ bFun.degree = n;
 bFun.variate = variate;
 bFun.domain = domain;
 bFun.basis = P;
+end
+%% BERNSTEIN BASIS FUNCTIONS
+% https://en.wikipedia.org/wiki/Bernstein_polynomial
+% CE507 Class Notes Set No. 6 "Higher Order Finite Elements"
+function bFun = bernsteinBasis(p,variate)
+domain = [-1 1];
+xi = variate;
+
+B = cell(p);
+for a=1:p
+    binomialCoefficient = factorial(p)/(factorial(a-1)*factorial(p+1-a));
+    B(xi) = 1/(2^p)*binomialCoefficient*(1-xi)^(p-(a-1))*(1+xi)^(a-1);
+end
+
+bFun.name = "Bernstein";
+bFun.degree = p;
+bFun.variate = variate;
+bFun.domain = domain;
+bFun.nodes = node;
+bFun.basis = B;
 end
