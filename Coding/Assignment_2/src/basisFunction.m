@@ -48,3 +48,23 @@ bFun.variate = variate;
 bFun.domain = domain;
 bFun.basis = P;
 end
+
+%% Bernstein polynomial BASIS FUNCTIONS
+%https://en.wikipedia.org/wiki/Bernstein_polynomial
+function bFun = bernsteinBasis(p,variate)
+domain = [-1 1];
+
+x = variate;
+
+for a = 1:p+1
+    P = factorial(p)/(factorial(a-1)*factorial(p+1-a));
+    P = simplify(P);
+    B(x) = 1/2^p*P*(1-x)^(p-a+1)*(1+x)^(a-1);
+end
+
+bFun.name = "Bernstein";
+bFun.degree = p;
+bFun.variate = variate;
+bFun.domain = domain;
+bFun.basis = B;
+end
