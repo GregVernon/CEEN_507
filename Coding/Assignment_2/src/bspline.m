@@ -41,7 +41,11 @@ classdef bspline
                 N{p+1} = sym(zeros(length(obj.knotVector)-(p+1),1));
                 for ii = 1:length(obj.knotVector)-(p+1)
                     if p == 0
-                        N{p+1}(ii) = piecewise(kV(ii) <= x < kV(ii+1),sym(1),sym(0));
+                        if ii < length(obj.knotVector)-(p+1)
+                            N{p+1}(ii) = piecewise(kV(ii) <= x < kV(ii+1),sym(1),sym(0));
+                        else
+                            N{p+1}(ii) = piecewise(kV(ii) <= x <= kV(ii+1),sym(1),sym(0));
+                        end
                     else
                         divisor(1) = (kV(ii+p)-kV(ii));
                         if divisor(1) == 0
