@@ -151,10 +151,12 @@ classdef bspline
             M = obj.bezierDecomposition.globalExtractionOperator;
             C = cell(obj.numcells,1);
             for e = 1:obj.numcells
-                supportedBezBases = [((e-1)*obj.degree + 1) : (e*obj.degree+1)];
-                C{e} = M(supportedBases{e},supportedBezBases);
+                supportedBezierBases{e} = [((e-1)*obj.degree + 1) : (e*obj.degree+1)];
+                C{e} = M(supportedBases{e},supportedBezierBases{e});
             end
             obj.bezierDecomposition.localExtractionOperator = C;
+            obj.bezierDecomposition.localExtractionSupportedSplineBases = supportedBases;
+            obj.bezierDecomposition.localExtractionSupportedBezierBases = supportedBezierBases;
         end
         end
     end
