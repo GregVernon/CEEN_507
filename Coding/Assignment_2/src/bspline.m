@@ -9,6 +9,7 @@ classdef bspline
         nodes
         knotVector
         basis
+        bezierDecomposition
     end
     
     methods
@@ -17,6 +18,7 @@ classdef bspline
             
             obj = obj.splineSpace_to_knotVector(splineSpace);
             obj = obj.constructBasis();
+            obj = obj.bezierExtraction("Scott");
         end
         
         function obj = splineSpace_to_knotVector(obj,splineSpace)
@@ -67,7 +69,7 @@ classdef bspline
             obj.basis.functions = simplify(N{end});
         end
         
-        function [obj,T] = bezierExtraction(obj,method)
+        function [obj,bez,T] = bezierExtraction(obj,method)
             if method == "Hughes"
                 newContinuity = [-1 -1*ones(1,length(obj.nodes)-2) -1];
             elseif method == "Scott"
@@ -114,7 +116,46 @@ classdef bspline
             splineSpace.nodes = obj.nodes;
             splineSpace.continuityVector = newContinuity;
             
-            obj = bspline(splineSpace);
+            bez = obj.splineSpace_to_knotVector(splineSpace);
+            bez = bez.constructBasis();
+            
+            obj.bezierDecomposition.method = method;
+            obj.bezierDecomposition.bezier = bez;
+            obj.bezierDecomposition.globalExtractionOperator = transpose(T{end});
+            obj = collectLocalExtractionOperators(obj);
+        end
+        
+        function [obj, C] = collectLocalExtractionOperators(obj)
+            N = obj.basis.functions;
+            B = obj.bezierDecomposition.bezier.basis.functions;
+            
+            N_conditions = cell(length(N),1);
+            for ii = 1:length(N)
+                N_parts = children(N(ii));
+                N_conditions{ii} = N_parts(1:end-1,2);
+            end
+            
+            isBasisSupported = cell(obj.numcells,1);
+            supportedBases = cell(obj.numcells,1);
+            for e = 1:obj.numcells
+                elemCenter = sum(obj.nodes(e:e+1))/2;
+                inDomain = false(length(N_conditions),1);
+                for ii = 1:length(N_conditions)
+                    condition = N_conditions{ii};
+                    inDomain(ii) = any(isAlways(subs(condition,symvar(condition),elemCenter)));
+                end
+                isBasisSupported{e} = inDomain;
+                supportedBases{e} = find(inDomain);
+            end
+            
+            M = obj.bezierDecomposition.globalExtractionOperator;
+            C = cell(obj.numcells,1);
+            for e = 1:obj.numcells
+                supportedBezBases = [((e-1)*obj.degree + 1) : (e*obj.degree+1)];
+                C{e} = M(supportedBases{e},supportedBezBases);
+            end
+            obj.bezierDecomposition.localExtractionOperator = C;
+        end
         end
     end
 end
