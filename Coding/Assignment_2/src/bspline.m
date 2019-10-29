@@ -71,7 +71,7 @@ classdef bspline
             if method == "Hughes"
                 newContinuity = [-1 -1*ones(1,length(obj.nodes)-2) -1];
             elseif method == "Scott"
-                newContinuity = [-1 -1*ones(1,length(obj.nodes)-2) -1];
+                newContinuity = [-1   zeros(1,length(obj.nodes)-2) -1];
             end
             newKnotVector = repelem(obj.nodes,[obj.degree-newContinuity]);
             
