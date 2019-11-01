@@ -1,6 +1,8 @@
 function bFun = basisFunction(Family, p, variate,domain)
 if Family == "Lagrange"
     bFun = lagrangeBasis(p,variate,domain);
+elseif Family == "Bernstein"
+    bFun = bernsteinBasis(p,variate);
 elseif Family == "Legendre"
     bFun = legendreBasis(p,variate);
 end
@@ -57,14 +59,14 @@ domain = [-1 1];
 x = variate;
 
 for a = 1:p+1
-    P = factorial(p)/(factorial(a-1)*factorial(p+1-a));
+    P = factorial(sym(p))/(factorial(sym(a)-1)*factorial(sym(p+1-a)));
     P = simplify(P);
-    B(x) = 1/2^p*P*(1-x)^(p-a+1)*(1+x)^(a-1);
+    B(a) = 1/2^sym(p)*P*(1-x)^(sym(p-a+1))*(1+x)^(sym(a)-1);
 end
 
 bFun.name = "Bernstein";
 bFun.degree = p;
 bFun.variate = variate;
 bFun.domain = domain;
-bFun.basis = B;
+bFun.basis = symfun(B,variate);
 end
