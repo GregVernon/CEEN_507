@@ -57,16 +57,14 @@ function bFun = bernsteinBasis(p,variate)
 domain = [-1 1];
 xi = variate;
 
-B = cell(p);
-for a=1:p
-    binomialCoefficient = factorial(p)/(factorial(a-1)*factorial(p+1-a));
-    B(xi) = 1/(2^p)*binomialCoefficient*(1-xi)^(p-(a-1))*(1+xi)^(a-1);
+for a=1:p+1
+    binomialCoefficient = factorial(sym(p))/(factorial(sym(a)-1)*factorial(sym(p+1-a)));
+    B(a) = 1/(2^sym(p))*binomialCoefficient*(1-xi)^(sym(p-(a-1)))*(1+xi)^(sym(a)-1);
 end
 
 bFun.name = "Bernstein";
 bFun.degree = p;
 bFun.variate = variate;
 bFun.domain = domain;
-bFun.nodes = node;
-bFun.basis = B;
+bFun.basis = symfun(B,variate);
 end
