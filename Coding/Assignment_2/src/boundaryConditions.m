@@ -2,7 +2,7 @@ function [K, F, BC] = boundaryConditions(K, F, BC, ELEM, eCONN, b, C, nodes, met
 %% Incorporate Boundary Conditions
 eCONN = b.elementConnectivity;
 % Create matrix of d variables
-nodes = b.splineNodes;
+nodes = b.nodes;
 nNodes = length(nodes);
 d = sym('d', [nNodes 1]);
 

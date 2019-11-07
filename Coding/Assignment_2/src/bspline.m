@@ -8,11 +8,11 @@ classdef bspline
         numcells
         knotVector
         uniqueKnotsVector
-        bezierNodes
-        splineNodes % Control Points
+        referenceNodes
+        nodes % Control Points
         elementConnectivity
         basis
-        bezierDecomposition
+        decomposition
     end
     
     methods
@@ -122,19 +122,19 @@ classdef bspline
             bez = obj.splineSpace_to_knotVector(splineSpace);
             bez = bez.constructBasis();
             
-            obj.bezierDecomposition.method = method;
-            obj.bezierDecomposition.bezier = bez;
-            obj.bezierDecomposition.globalExtractionOperator = transpose(T{end});
+            obj.decomposition.method = method;
+            obj.decomposition.spline = bez;
+            obj.decomposition.globalExtractionOperator = transpose(T{end});
             obj = collectLocalExtractionOperators(obj);
         end
         
         function [obj, C] = collectLocalExtractionOperators(obj)
             N = obj.basis.functions;
-            B = obj.bezierDecomposition.bezier.basis.functions;
+            B = obj.decomposition.spline.basis.functions;
             for e = 1:obj.numcells
                 bezNodes{e} = linspace(obj.uniqueKnotsVector(e),obj.uniqueKnotsVector(e+1),obj.degree+1);
             end
-            obj.bezierNodes = unique(cell2mat(bezNodes));
+            obj.decomposition.spline.nodes = unique(cell2mat(bezNodes));
             
             N_conditions = cell(length(N),1);
             for ii = 1:length(N)
@@ -155,19 +155,19 @@ classdef bspline
                 supportedBases{e} = find(inDomain);
             end
             
-            M = obj.bezierDecomposition.globalExtractionOperator;
+            M = obj.decomposition.globalExtractionOperator;
             C = cell(obj.numcells,1);
             nodes = cell(obj.numcells,1);
             for e = 1:obj.numcells
                 supportedBezierBases{e} = [((e-1)*obj.degree + 1) : (e*obj.degree+1)];
                 C{e} = M(supportedBases{e},supportedBezierBases{e});
-                nodes{e} = inv(C{e}')*obj.bezierNodes(supportedBezierBases{e})';
+                nodes{e} = inv(C{e}')*obj.decomposition.spline.nodes(supportedBezierBases{e})';
             end
-            obj.bezierDecomposition.localExtractionOperator = C;
-            obj.bezierDecomposition.localExtractionSupportedSplineBases = supportedBases;
-            obj.bezierDecomposition.localExtractionSupportedBezierBases = supportedBezierBases;
-            obj.elementConnectivity = [obj.bezierDecomposition.localExtractionSupportedSplineBases{:}];
-            obj.splineNodes = unique([nodes{:}])';
+            obj.decomposition.localExtractionOperator = C;
+            obj.decomposition.localExtractionSupportedSplineBases = supportedBases;
+            obj.decomposition.localExtractionSupportedBezierBases = supportedBezierBases;
+            obj.elementConnectivity = [obj.decomposition.localExtractionSupportedSplineBases{:}];
+            obj.nodes = unique([nodes{:}])';
         end
     end
 end

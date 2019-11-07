@@ -33,16 +33,16 @@ splineSpace.uniqueKnotsVector = linspace(xMin,xMax,nElem+1);
 splineSpace.continuityVector = elemContinuity;
 b = bspline(splineSpace);
 % Global Bezier Extraction Operator
-M = b.bezierDecomposition.globalExtractionOperator;
+M = b.decomposition.globalExtractionOperator;
 % Local Bezier Extraction Operators -- access as C{e}
-C = b.bezierDecomposition.localExtractionOperator;
+C = b.decomposition.localExtractionOperator;
 
 % Create the local basis functions
 bFun = basisFunction("Bernstein", elemDegree, sym("xi","real"), [-1 1]);
 ELEM = createElements(eCONN,nodes,C,bFun);
 
 %% Construct linear system of equations
-[K,k] = stiffnessMatrix(ELEM,eCONN,b,C,"Exact");
+K = stiffnessMatrix(ELEM,eCONN,b,C,"Exact");
 F = forceVector(ELEM,eCONN,b,C,f,"Exact");
 
 %% Apply boundary conditions
