@@ -1,4 +1,4 @@
-function ELEM = createElements(eCONN,nodes,local_bFun)
+function ELEM = createElements(eCONN,nodes,C,local_bFun)
 
 % Get information about local basis function
 Family = local_bFun.name;

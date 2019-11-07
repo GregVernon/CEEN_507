@@ -1,4 +1,4 @@
-function [F,f] = forceVector(ELEM,eCONN,fun,method)
+function [F,f] = forceVector(ELEM,eCONN,b,C,fun,method)
 nELEM = length(ELEM);
 % Build local matrices for each element
 bFun = ELEM(1).LbFun;
@@ -7,7 +7,7 @@ if method == "Exact"
     % Exact integration method
     f = sym(zeros(nLocalNodes,nELEM));
     for e = 1:nELEM
-        Ne = formula(ELEM(e).LBasisFuns);
+        Ne = C{e}*formula(ELEM(e).LBasisFuns);
         JAC = ELEM(e).Jacobian_Local_to_GlobalVariate;
         for A = 1:nLocalNodes
             NA = Ne(A);
@@ -39,10 +39,11 @@ elseif method == "GaussQuadrature"
     end
 end
 
-
+eCONN = b.elementConnectivity;
 nGlobalNodes = max(max(eCONN));
 F = sym(zeros(nGlobalNodes, 1));
 for e = 1:nELEM
+    JAC = ELEM(e).Jacobian_Global_to_LocalVariate;
     for n = 1:nLocalNodes
         gID1 = eCONN(n,e);
         F(gID1) = F(gID1) + f(n,e); %input local values into global force vector

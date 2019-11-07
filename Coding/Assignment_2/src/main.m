@@ -1,4 +1,4 @@
-function feSolution = main(nElem, elemDegree, f, g, h)
+function feSolution = main(nElem, elemDegree, elemContinuity, f, g, h)
 %% Define problem domain
 x = sym("x","real");
 xMin = 0;
@@ -24,24 +24,36 @@ BC.U.val = g;
 BC.dU.location = x == 0;
 BC.dU.val = h;
 
-%% Construct the finite element space
+%% Construct the finite element Spline Space
 [eCONN,nodes] = generateMesh(xMin,xMax,nElem,elemDegree);
-bFun = basisFunction("Lagrange", elemDegree, sym("xi","real"), [-1 1]);
-ELEM = createElements(eCONN,nodes,bFun);
+
+% Create the B-Spline
+splineSpace.degree = elemDegree;
+splineSpace.uniqueKnotsVector = linspace(xMin,xMax,nElem+1);
+splineSpace.continuityVector = elemContinuity;
+b = bspline(splineSpace);
+% Global Bezier Extraction Operator
+M = b.bezierDecomposition.globalExtractionOperator;
+% Local Bezier Extraction Operators -- access as C{e}
+C = b.bezierDecomposition.localExtractionOperator;
+
+% Create the local basis functions
+bFun = basisFunction("Bernstein", elemDegree, sym("xi","real"), [-1 1]);
+ELEM = createElements(eCONN,nodes,C,bFun);
 
 %% Construct linear system of equations
-K = stiffnessMatrix(ELEM,eCONN,"GaussQuadrature");
-F = forceVector(ELEM,eCONN,f,"GaussQuadrature");
+[K,k] = stiffnessMatrix(ELEM,eCONN,b,C,"Exact");
+F = forceVector(ELEM,eCONN,b,C,f,"Exact");
 
 %% Apply boundary conditions
-[K,F,BC] = boundaryConditions(K,F,BC,ELEM,eCONN,nodes,"GaussQuadrature");
+[K,F,BC] = boundaryConditions(K,F,BC,ELEM,eCONN,b,C,nodes,"Exact");
 
 %% Solve the system of equations
 d = K\F;
 d = [d(1:(BC.U.gNodeID-1)); BC.U.val; d(BC.U.gNodeID:end)];
 
 %% Assemble the solution
-[U,ELEM] = assembleSolution(ELEM,eCONN,d);
+[U,ELEM] = assembleSolution(ELEM,eCONN,b,C,d);
 
 %% Output results
 feSolution.Elements = ELEM;

@@ -6,15 +6,18 @@ classdef bspline
         degree
         continuityVector
         numcells
-        nodes
         knotVector
+        uniqueKnotsVector
+        bezierNodes
+        splineNodes % Control Points
+        elementConnectivity
         basis
         bezierDecomposition
     end
     
     methods
         function obj = bspline(splineSpace)
-            assert(length(splineSpace.nodes) == length(splineSpace.continuityVector))
+            assert(length(splineSpace.uniqueKnotsVector) == length(splineSpace.continuityVector))
             
             obj = obj.splineSpace_to_knotVector(splineSpace);
             obj = obj.constructBasis();
@@ -23,18 +26,18 @@ classdef bspline
         
         function obj = splineSpace_to_knotVector(obj,splineSpace)
             obj.degree = splineSpace.degree;
-            obj.nodes = splineSpace.nodes;
-            obj.numcells = length(obj.nodes)-1;
+            obj.uniqueKnotsVector = splineSpace.uniqueKnotsVector;
+            obj.numcells = length(obj.uniqueKnotsVector)-1;
             obj.continuityVector = splineSpace.continuityVector;
-            knotVector = cell(1,length(obj.nodes));
-            for ii = 1:length(obj.nodes)
-                knotVector{ii} = repmat(obj.nodes(ii),1,obj.degree-obj.continuityVector(ii));
+            knotVector = cell(1,length(obj.uniqueKnotsVector));
+            for ii = 1:length(obj.uniqueKnotsVector)
+                knotVector{ii} = repmat(obj.uniqueKnotsVector(ii),1,obj.degree-obj.continuityVector(ii));
             end
             obj.knotVector = cell2mat(knotVector);
         end
         
         function obj = constructBasis(obj)
-            obj.basis.variate = sym("xi","real");
+            obj.basis.variate = sym("x","real");
             
             x = obj.basis.variate;
             kV = obj.knotVector;
@@ -71,11 +74,11 @@ classdef bspline
         
         function [obj,bez,T] = bezierExtraction(obj,method)
             if method == "Hughes"
-                newContinuity = [-1 -1*ones(1,length(obj.nodes)-2) -1];
+                newContinuity = [-1 -1*ones(1,length(obj.uniqueKnotsVector)-2) -1];
             elseif method == "Scott"
-                newContinuity = [-1   zeros(1,length(obj.nodes)-2) -1];
+                newContinuity = [-1   zeros(1,length(obj.uniqueKnotsVector)-2) -1];
             end
-            newKnotVector = repelem(obj.nodes,[obj.degree-newContinuity]);
+            newKnotVector = repelem(obj.uniqueKnotsVector,[obj.degree-newContinuity]);
             
             KV = obj.knotVector;
             nKV = newKnotVector;
@@ -113,7 +116,7 @@ classdef bspline
                 end
             end
             splineSpace.degree = obj.degree;
-            splineSpace.nodes = obj.nodes;
+            splineSpace.uniqueKnotsVector = obj.uniqueKnotsVector;
             splineSpace.continuityVector = newContinuity;
             
             bez = obj.splineSpace_to_knotVector(splineSpace);
@@ -128,6 +131,10 @@ classdef bspline
         function [obj, C] = collectLocalExtractionOperators(obj)
             N = obj.basis.functions;
             B = obj.bezierDecomposition.bezier.basis.functions;
+            for e = 1:obj.numcells
+                bezNodes{e} = linspace(obj.uniqueKnotsVector(e),obj.uniqueKnotsVector(e+1),obj.degree+1);
+            end
+            obj.bezierNodes = unique(cell2mat(bezNodes));
             
             N_conditions = cell(length(N),1);
             for ii = 1:length(N)
@@ -138,7 +145,7 @@ classdef bspline
             isBasisSupported = cell(obj.numcells,1);
             supportedBases = cell(obj.numcells,1);
             for e = 1:obj.numcells
-                elemCenter = sum(obj.nodes(e:e+1))/2;
+                elemCenter = sum(obj.uniqueKnotsVector(e:e+1))/2;
                 inDomain = false(length(N_conditions),1);
                 for ii = 1:length(N_conditions)
                     condition = N_conditions{ii};
@@ -150,15 +157,17 @@ classdef bspline
             
             M = obj.bezierDecomposition.globalExtractionOperator;
             C = cell(obj.numcells,1);
+            nodes = cell(obj.numcells,1);
             for e = 1:obj.numcells
                 supportedBezierBases{e} = [((e-1)*obj.degree + 1) : (e*obj.degree+1)];
                 C{e} = M(supportedBases{e},supportedBezierBases{e});
+                nodes{e} = inv(C{e}')*obj.bezierNodes(supportedBezierBases{e})';
             end
             obj.bezierDecomposition.localExtractionOperator = C;
             obj.bezierDecomposition.localExtractionSupportedSplineBases = supportedBases;
             obj.bezierDecomposition.localExtractionSupportedBezierBases = supportedBezierBases;
-        end
+            obj.elementConnectivity = [obj.bezierDecomposition.localExtractionSupportedSplineBases{:}];
+            obj.splineNodes = unique([nodes{:}])';
         end
     end
 end
-

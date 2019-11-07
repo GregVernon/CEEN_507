@@ -4,7 +4,7 @@ if Family == "Lagrange"
 elseif Family == "Legendre"
     bFun = legendreBasis(p,variate);
 elseif Family == "Bernstein"
-    bFun = bernsteinBasis(p,variate);
+    bFun = bernsteinBasis(p,variate,domain);
 end
 end
 
@@ -37,7 +37,6 @@ end
 %% LEGENDRE BASIS FUNCTIONS
 % https://en.wikipedia.org/wiki/Legendre_polynomials#Rodrigues'_formula_and_other_explicit_formulas
 function bFun = legendreBasis(p,variate)
-domain = [-1 1];
 n = p; %Maintain consistent documentation
 x = variate;
 
@@ -47,14 +46,13 @@ P(x) = simplify(P);
 bFun.name = "Legendre";
 bFun.degree = n;
 bFun.variate = variate;
-bFun.domain = domain;
 bFun.basis = P;
 end
 %% BERNSTEIN BASIS FUNCTIONS
 % https://en.wikipedia.org/wiki/Bernstein_polynomial
 % CE507 Class Notes Set No. 6 "Higher Order Finite Elements"
-function bFun = bernsteinBasis(p,variate)
-domain = [-1 1];
+function bFun = bernsteinBasis(p,variate,domain)
+node = linspace(domain(1), domain(2), p+1);
 xi = variate;
 
 for a=1:p+1
@@ -66,5 +64,6 @@ bFun.name = "Bernstein";
 bFun.degree = p;
 bFun.variate = variate;
 bFun.domain = domain;
-bFun.basis = symfun(B,variate);
+bFun.nodes = node;
+bFun.basis = symfun(transpose(B),variate);
 end

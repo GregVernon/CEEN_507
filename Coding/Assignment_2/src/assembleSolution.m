@@ -1,9 +1,10 @@
-function [U,ELEM] = assembleSolution(ELEM,eCONN,solutionVector)
+function [U,ELEM] = assembleSolution(ELEM,eCONN,b,C,solutionVector)
 x = sym("x","real");
 d = solutionVector;
 nElem = length(ELEM);
 
 % Insert solution vector into element global degrees of freedom
+eCONN = b.elementConnectivity;
 for e = 1:nElem
     nLocalNodes = length(eCONN(:,e));
     for n = 1:nLocalNodes
@@ -23,7 +24,8 @@ end
 U = sym(NaN);
 for e = 1:nElem
     nLocalNodes = length(eCONN(:,e));
-    NA = formula(ELEM(e).GBasisFuns);
+    NA = C{e}*ELEM(e).LBasisFuns;
+    NA = NA(ELEM(e).GlobalVariate_to_LocalVariate);
     for n = 1:nLocalNodes
         if n == 1
             U = piecewise(ELEM(e).GDomain(1)<=x<ELEM(e).GDomain(2), ELEM(e).GDOF(n) * NA(n),U);

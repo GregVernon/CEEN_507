@@ -1,7 +1,8 @@
-function [K, F, BC] = boundaryConditions(K, F, BC, ELEM, eCONN, nodes, method)
+function [K, F, BC] = boundaryConditions(K, F, BC, ELEM, eCONN, b, C, nodes, method)
 %% Incorporate Boundary Conditions
-
+eCONN = b.elementConnectivity;
 % Create matrix of d variables
+nodes = b.splineNodes;
 nNodes = length(nodes);
 d = sym('d', [nNodes 1]);
 
@@ -31,7 +32,8 @@ for e = 1:nELEM
     % Apply g
     [isInElement,idx] = ismember(BC.U.gNodeID,eCONN(:,e));
     if isInElement == true
-        dNG = ELEM(e).LDerivBasisFuns(idx);
+        dNG = C{e}*ELEM(e).LDerivBasisFuns;
+        dNG = dNG(idx);
     else
         dNG = sym(0);
     end
@@ -40,7 +42,8 @@ for e = 1:nELEM
     JAC = ELEM(e).Jacobian_Global_to_LocalVariate;
     nLocalNodes = length(ELEM(e).LNodes);
     for A = 1:nLocalNodes
-        dNA = dNe(A);
+        dNA = C{e}*dNe;
+        dNA = dNA(A);
         if method == "Exact"
             gTerm = g * int(dNA*dNG * JAC, sym("xi"), ELEM(e).LDomain);
         elseif method == "GaussQuadrature"
@@ -65,7 +68,7 @@ BC.dU.gNodeID = find(isAlways(subs(hLoc,lhs(hLoc), nodes)));
 % Subtract the h terms from the F matrix
 for e = 1:nELEM
     %     Jac_L2G = ELEM(e).Jacobian_Local_to_GlobalVariate;
-    Ne = formula(ELEM(e).LBasisFuns);
+    Ne = C{e}*formula(ELEM(e).LBasisFuns);
     % Apply h
     [isInElement,idx] = ismember(BC.dU.gNodeID,eCONN(:,e));
     if isInElement == true
