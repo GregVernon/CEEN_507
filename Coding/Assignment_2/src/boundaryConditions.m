@@ -1,5 +1,5 @@
 function [K, F, BC] = boundaryConditions(K,F,BC,ELEM,BSpline,method)
-%% Incorporate Boundary Conditions
+% Extract information from B-Spline
 eCONN = BSpline.elementConnectivity;
 C = BSpline.decomposition.localExtractionOperator;
 nodes = BSpline.nodes;
@@ -28,6 +28,7 @@ if method == "GaussQuadrature"
         GQ(ii).maxDegree = 2*n - 1;
     end
 end
+
 % Subtract the g terms from the F matrix
 nELEM = length(ELEM);
 for e = 1:nELEM
@@ -70,7 +71,6 @@ BC.dU.gNodeID = find(isAlways(subs(hLoc,lhs(hLoc), nodes)));
 
 % Subtract the h terms from the F matrix
 for e = 1:nELEM
-    %     Jac_L2G = ELEM(e).Jacobian_Local_to_GlobalVariate;
     Ne = C{e}*formula(ELEM(e).LBasisFuns);
     % Apply h
     [isInElement,idx] = ismember(BC.dU.gNodeID,eCONN(:,e));
@@ -86,17 +86,17 @@ for e = 1:nELEM
         end
     end
 end
-% Reconstruct new d matrix with g-value inserted at correct node
-% d = [d(1:gBCNode-1); g; d(gBCNode+1:1)];
 
-% Reconstruct new F and d matrices that subtract the gNode terms
-% F = F - K(:,gBCNode).*d(gBCNode);
-F(BC.U.gNodeID) = [];
-d(BC.U.gNodeID) = [];
-
-% Reconstruct K matrix by removing all terms associated with g BC
+% Remove the gNode terms from the linear system
+% Stiffness Matrix
 K(BC.U.gNodeID,:) = [];
 K(:,BC.U.gNodeID) = [];
+
+% Force Vector
+F(BC.U.gNodeID) = [];
+
+% Solution / Unknowns Vector
+d(BC.U.gNodeID) = [];
 
 % Define the Kd=F relationship
 K * d == F;

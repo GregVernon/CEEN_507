@@ -25,15 +25,15 @@ BC.dU.location = x == 0;
 BC.dU.val = h;
 
 %% Construct the finite element Spline Space
-% [eCONN,nodes] = generateMesh(xMin,xMax,nElem,elemDegree);
-
 % Create the B-Spline
 splineSpace.degree = elemDegree;
 splineSpace.uniqueKnotsVector = linspace(xMin,xMax,nElem+1);
 splineSpace.continuityVector = elemContinuity;
 BSpline = bspline(splineSpace);
+
 % Global Bezier Extraction Operator
 M = BSpline.decomposition.globalExtractionOperator;
+
 % Local Bezier Extraction Operators -- access as C{e}
 C = BSpline.decomposition.localExtractionOperator;
 
