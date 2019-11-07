@@ -1,10 +1,13 @@
-function [U,ELEM] = assembleSolution(ELEM,eCONN,b,C,solutionVector)
+function [U,ELEM] = assembleSolution(ELEM,BSpline,solutionVector)
+% Extract information from BSpline
+eCONN = BSpline.elementConnectivity;
+C = BSpline.decomposition.localExtractionOperator;
+
 x = sym("x","real");
 d = solutionVector;
 nElem = length(ELEM);
 
 % Insert solution vector into element global degrees of freedom
-eCONN = b.elementConnectivity;
 for e = 1:nElem
     nLocalNodes = length(eCONN(:,e));
     for n = 1:nLocalNodes

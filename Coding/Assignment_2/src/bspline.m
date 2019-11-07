@@ -1,7 +1,6 @@
 classdef bspline
-    %UNTITLED2 Summary of this class goes here
-    %   Detailed explanation goes here
     
+    %% B-Spline Properties
     properties
         degree
         continuityVector
@@ -15,7 +14,9 @@ classdef bspline
         decomposition
     end
     
+    %% B-Spline Methods
     methods
+        %% B-Spline Constructor
         function obj = bspline(splineSpace)
             assert(length(splineSpace.uniqueKnotsVector) == length(splineSpace.continuityVector))
             
@@ -24,6 +25,7 @@ classdef bspline
             obj = obj.bezierExtraction("Scott");
         end
         
+        %% Convert Spline Space to canoncial "Knot Vector Form"
         function obj = splineSpace_to_knotVector(obj,splineSpace)
             obj.degree = splineSpace.degree;
             obj.uniqueKnotsVector = splineSpace.uniqueKnotsVector;
@@ -36,6 +38,7 @@ classdef bspline
             obj.knotVector = cell2mat(knotVector);
         end
         
+        %% Construct B-Spline Basis
         function obj = constructBasis(obj)
             obj.basis.variate = sym("x","real");
             
@@ -72,6 +75,7 @@ classdef bspline
             obj.basis.functions = simplify(N{end});
         end
         
+        %% Bezier Extraction
         function [obj,bez,T] = bezierExtraction(obj,method)
             if method == "Hughes"
                 newContinuity = [-1 -1*ones(1,length(obj.uniqueKnotsVector)-2) -1];
@@ -115,35 +119,61 @@ classdef bspline
                     end
                 end
             end
+            
+            % Construct Bezier Datastructure
             splineSpace.degree = obj.degree;
             splineSpace.uniqueKnotsVector = obj.uniqueKnotsVector;
             splineSpace.continuityVector = newContinuity;
-            
             bez = obj.splineSpace_to_knotVector(splineSpace);
             bez = bez.constructBasis();
             
+            % Construct Bezier element connectivity
+            eCONN = zeros(obj.degree+1,obj.numcells);
+            nCount = 1;
+            for ii = 1:obj.numcells
+                for jj = 1:obj.degree+1
+                    if jj ~=1
+                        nCount = nCount + 1;
+                    end
+                    eCONN(jj,ii) = nCount;
+                end
+            end
+            
+            % Package results
             obj.decomposition.method = method;
             obj.decomposition.spline = bez;
             obj.decomposition.globalExtractionOperator = transpose(T{end});
+            obj.decomposition.spline.elementConnectivity = eCONN;
             obj = collectLocalExtractionOperators(obj);
         end
         
+        %% Collect Local Extraction Operators
         function [obj, C] = collectLocalExtractionOperators(obj)
+            % This method collects the local extraction operators, i.e. the
+            % extraction operator for each Bezier element.
+            
+            % Step 1: Compute uniformly spaced nodes in the reference (C^0)
+            %         configuration
             N = obj.basis.functions;
             B = obj.decomposition.spline.basis.functions;
+            refNodes = cell(obj.numcells,1);
             for e = 1:obj.numcells
-                bezNodes{e} = linspace(obj.uniqueKnotsVector(e),obj.uniqueKnotsVector(e+1),obj.degree+1);
+                refNodes{e} = linspace(obj.uniqueKnotsVector(e),obj.uniqueKnotsVector(e+1),obj.degree+1);
             end
-            obj.decomposition.spline.nodes = unique(cell2mat(bezNodes));
+            obj.decomposition.spline.nodes = unique(cell2mat(refNodes));
             
+            % Step 2: Extract the conditions of the B-Spline's piecewise
+            %         basis functions
             N_conditions = cell(length(N),1);
             for ii = 1:length(N)
                 N_parts = children(N(ii));
                 N_conditions{ii} = N_parts(1:end-1,2);
             end
             
+            % Step 3: For each B-Spline reference (C^0) element (knot span)
+            %         determine which basis functions are supported
             isBasisSupported = cell(obj.numcells,1);
-            supportedBases = cell(obj.numcells,1);
+            supportedSplineBases = cell(obj.numcells,1);
             for e = 1:obj.numcells
                 elemCenter = sum(obj.uniqueKnotsVector(e:e+1))/2;
                 inDomain = false(length(N_conditions),1);
@@ -152,22 +182,28 @@ classdef bspline
                     inDomain(ii) = any(isAlways(subs(condition,symvar(condition),elemCenter)));
                 end
                 isBasisSupported{e} = inDomain;
-                supportedBases{e} = find(inDomain);
+                supportedSplineBases{e} = find(inDomain);
             end
             
+            % Step 4: Extract the local extraction operator via indexing
+            %         into the global extraction operator, using the
+            %         previously determined supported C^0 bases.
             M = obj.decomposition.globalExtractionOperator;
+            supportedReferenceBases = cell(obj.numcells,1);
             C = cell(obj.numcells,1);
-            nodes = cell(obj.numcells,1);
+            splineNodes = cell(obj.numcells,1);
             for e = 1:obj.numcells
-                supportedBezierBases{e} = [((e-1)*obj.degree + 1) : (e*obj.degree+1)];
-                C{e} = M(supportedBases{e},supportedBezierBases{e});
-                nodes{e} = inv(C{e}')*obj.decomposition.spline.nodes(supportedBezierBases{e})';
+                supportedReferenceBases{e} = [((e-1)*obj.degree + 1) : (e*obj.degree+1)];
+                C{e} = M(supportedSplineBases{e},supportedReferenceBases{e});
+                splineNodes{e} = inv(C{e}')*obj.decomposition.spline.nodes(supportedReferenceBases{e});
             end
+            
+            % Step 5: Package output
             obj.decomposition.localExtractionOperator = C;
-            obj.decomposition.localExtractionSupportedSplineBases = supportedBases;
-            obj.decomposition.localExtractionSupportedBezierBases = supportedBezierBases;
+            obj.decomposition.localExtractionSupportedSplineBases = supportedSplineBases;
+            obj.decomposition.localExtractionSupportedBezierBases = supportedReferenceBases;
             obj.elementConnectivity = [obj.decomposition.localExtractionSupportedSplineBases{:}];
-            obj.nodes = unique([nodes{:}])';
+            obj.nodes = unique([splineNodes{:}]);
         end
     end
 end

@@ -1,4 +1,7 @@
-function ELEM = createElements(eCONN,nodes,C,local_bFun)
+function ELEM = createElements(BSpline,local_bFun)
+% Extract information from B-Spline
+eCONN = BSpline.decomposition.spline.elementConnectivity;
+nodes = BSpline.decomposition.spline.nodes;
 
 % Get information about local basis function
 Family = local_bFun.name;
@@ -17,7 +20,7 @@ for e = nELEM:-1:1
     global_bFun = basisFunction(Family,degree,globalVariate,ELEM(e).GDomain);
     ELEM(e).GbFun = global_bFun;
     ELEM(e).GBasisFuns(globalVariate) = global_bFun.basis;
-    ELEM(e).GInterpFun(globalVariate) = global_bFun.basis' * ELEM(e).GNodes';
+    ELEM(e).GInterpFun(globalVariate) = global_bFun.basis' * ELEM(e).GNodes;
 end
 
 % Create Local Definitions

@@ -1,5 +1,10 @@
-function [F,f] = forceVector(ELEM,eCONN,b,C,fun,method)
+function [F,f] = forceVector(ELEM,BSpline,fun,method)
 nELEM = length(ELEM);
+
+% Extract information from B-Spline
+eCONN = BSpline.elementConnectivity;
+C = BSpline.decomposition.localExtractionOperator;
+
 % Build local matrices for each element
 bFun = ELEM(1).LbFun;
 nLocalNodes = bFun.degree + 1;
@@ -39,7 +44,6 @@ elseif method == "GaussQuadrature"
     end
 end
 
-eCONN = b.elementConnectivity;
 nGlobalNodes = max(max(eCONN));
 F = sym(zeros(nGlobalNodes, 1));
 for e = 1:nELEM

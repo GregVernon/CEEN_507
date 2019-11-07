@@ -1,8 +1,10 @@
-function [K, F, BC] = boundaryConditions(K, F, BC, ELEM, eCONN, b, C, nodes, method)
+function [K, F, BC] = boundaryConditions(K,F,BC,ELEM,BSpline,method)
 %% Incorporate Boundary Conditions
-eCONN = b.elementConnectivity;
+eCONN = BSpline.elementConnectivity;
+C = BSpline.decomposition.localExtractionOperator;
+nodes = BSpline.nodes;
+
 % Create matrix of d variables
-nodes = b.nodes;
 nNodes = length(nodes);
 d = sym('d', [nNodes 1]);
 
