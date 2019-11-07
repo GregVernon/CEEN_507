@@ -15,16 +15,17 @@ gLoc = BC.U.location;
 BC.U.gNodeID = find(isAlways(subs(gLoc,lhs(gLoc), nodes)));
 
 % Precompute Gauss Quadrature rules
-ii = 0;
-for n = 9:-1:0
-    ii = ii+1;
-    [P,W] = Quadrature("Gauss-Legendre",n);
-    GQ(ii).P = P;
-    GQ(ii).W = W;
-    GQ(ii).nPoints = n;
-    GQ(ii).maxDegree = 2*n - 1;
+if method == "GaussQuadrature"
+    ii = 0;
+    for n = 9:-1:0
+        ii = ii+1;
+        [P,W] = Quadrature("Gauss-Legendre",n);
+        GQ(ii).P = P;
+        GQ(ii).W = W;
+        GQ(ii).nPoints = n;
+        GQ(ii).maxDegree = 2*n - 1;
+    end
 end
-
 % Subtract the g terms from the F matrix
 nELEM = length(ELEM);
 for e = 1:nELEM
