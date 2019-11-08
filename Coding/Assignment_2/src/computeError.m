@@ -5,9 +5,9 @@ nELEM = length(ELEM);
 if method == "Exact"
     err = sym(0);
     for e = 1:nELEM
-%         globalExactSolution = piecewise(ELEM(e).GDomain(1) <= sym("x") <= ELEM(e).GDomain(2),exactSolution.U,NaN);
+        C = feResults.Spline.decomposition.localExtractionOperator{e};
         localExactSolution = exactSolution.U(ELEM(e).LocalVariate_to_GlobalVariate) * ELEM(e).Jacobian_Local_to_GlobalVariate;
-        localApproxSolution = ELEM(e).LBasisFuns' * ELEM(e).LDOF;
+        localApproxSolution = (C*ELEM(e).LBasisFuns)' * ELEM(e).LDOF;
         elemErr = int((localExactSolution - localApproxSolution)^2 , ELEM(e).GDomain);
         err = err + elemErr;
     end
