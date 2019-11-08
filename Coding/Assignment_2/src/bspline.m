@@ -161,7 +161,9 @@ classdef bspline
                 refNodes{e} = linspace(obj.uniqueKnotsVector(e),obj.uniqueKnotsVector(e+1),obj.degree+1);
             end
             obj.decomposition.spline.nodes = unique(cell2mat(refNodes));
-            
+            if size(obj.decomposition.spline.nodes,2) > size(obj.decomposition.spline.nodes,1)
+                obj.decomposition.spline.nodes = transpose(obj.decomposition.spline.nodes);
+            end
             % Step 2: Extract the conditions of the B-Spline's piecewise
             %         basis functions
             N_conditions = cell(length(N),1);
