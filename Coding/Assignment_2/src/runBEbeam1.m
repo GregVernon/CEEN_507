@@ -2,6 +2,7 @@ b = 0.005; %problem definition
 H = 0.005; %problem definition
 L = 1;
 E = 1000000;
+I = b*H^3/12 %or pass in as a function?
 
 
 syms f(x) g h
