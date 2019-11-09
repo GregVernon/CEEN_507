@@ -5,7 +5,7 @@ E = 1000000;
 
 
 syms f(x) g h
-f(x) = cantileverXDeflection(H,b,L,E); %fix for beam problem
+f(x) = cantileverXDeflection(H,b,L,E); %references Hannah's functions
 g = sym(0);
 h = sym(0);
 
