@@ -1,4 +1,4 @@
-function feSolution = main(nElem, elemDegree, elemContinuity, f, g, h)
+function feSolution = main(nElem, elemDegree, elemContinuity, f, g, h, m, q, EI)
 %% Define problem domain
 x = sym("x","real");
 xMin = 0;
@@ -19,10 +19,14 @@ xMax = 1;
 % g = sym(1); 
 % h = sym(0.25);
 
-BC.U.location = x==1;
+BC.U.location = x==0;
 BC.U.val = g;
 BC.dU.location = x == 0;
 BC.dU.val = h;
+BC.d2U.location = x == 1;
+BC.d2U.val = m;
+BC.d3U.location = x == 1;
+BC.d3U.val = q;
 
 %% Construct the finite element Spline Space
 % Create the B-Spline
