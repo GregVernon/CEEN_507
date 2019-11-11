@@ -36,7 +36,7 @@ for e = 1:nELEM
     % Apply g
     [isInElement,idx] = ismember(BC.U.gNodeID,eCONN(:,e));
     if isInElement == true
-        dNG = C{e}*ELEM(e).LDerivBasisFuns;
+        dNG = C{e}*formula(ELEM(e).LDerivBasisFuns);
         dNG = dNG(idx);
     else
         dNG = sym(0);
