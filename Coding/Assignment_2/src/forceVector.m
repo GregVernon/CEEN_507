@@ -50,6 +50,6 @@ for e = 1:nELEM
     JAC = ELEM(e).Jacobian_Global_to_LocalVariate;
     for n = 1:nLocalNodes
         gID1 = eCONN(n,e);
-        F(gID1) = F(gID1) + f(n,e); %input local values into global force vector
+        F(gID1) = F(gID1) + f(n,e);%*JAC; %input local values into global force vector
     end
 end

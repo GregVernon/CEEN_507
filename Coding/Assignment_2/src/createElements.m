@@ -1,4 +1,4 @@
-function ELEM = createElements(BSpline,local_bFun)
+function ELEM = createElements(BSpline,local_bFun,EI)
 % Extract information from B-Spline
 eCONN = BSpline.decomposition.spline.elementConnectivity;
 nodes = BSpline.decomposition.spline.nodes;
@@ -21,6 +21,7 @@ for e = nELEM:-1:1
     ELEM(e).GbFun = global_bFun;
     ELEM(e).GBasisFuns(globalVariate) = global_bFun.basis;
     ELEM(e).GInterpFun(globalVariate) = global_bFun.basis' * ELEM(e).GNodes;
+    ELEM(e).G_EI = EI;
 end
 
 % Create Local Definitions
@@ -30,7 +31,7 @@ for e = nELEM:-1:1
     ELEM(e).LDOF    = ones(length(ELEM(e).LNodes),1);
     ELEM(e).LbFun = local_bFun;
     ELEM(e).LBasisFuns(localVariate) = local_bFun.basis;
-	ELEM(e).LDerivBasisFuns = diff(ELEM(e).LBasisFuns(localVariate));
+	ELEM(e).LDerivBasisFuns(localVariate) = diff(ELEM(e).LBasisFuns(localVariate));
     ELEM(e).LInterpFun(localVariate) = local_bFun.basis' * ELEM(e).LNodes';
 end
 
@@ -42,6 +43,8 @@ for e = nELEM:-1:1
     ELEM(e).LocalVariate_to_GlobalVariate = x_xi;
     ELEM(e).Jacobian_Global_to_LocalVariate = diff(xi_x);
     ELEM(e).Jacobian_Local_to_GlobalVariate = diff(x_xi);
+    ELEM(e).Hessian_Global_to_LocalVariate = diff(xi_x,2);
+    ELEM(e).Hessian_Local_to_GlobalVariate = diff(x_xi,2);
 end
 
 end

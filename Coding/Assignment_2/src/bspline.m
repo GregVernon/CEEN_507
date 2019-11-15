@@ -75,6 +75,11 @@ classdef bspline
             obj.basis.functions = simplify(N{end});
         end
         
+        %% Greville Abscissae
+        function [obj,nodes] = computeGrevilleAbscissae(obj)
+            
+        end
+            
         %% Bezier Extraction
         function [obj,bez,T] = bezierExtraction(obj,method)
             if method == "Hughes"

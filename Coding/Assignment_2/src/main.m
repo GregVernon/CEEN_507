@@ -43,10 +43,10 @@ C = BSpline.decomposition.localExtractionOperator;
 
 % Create the local basis functions
 bFun = basisFunction("Bernstein", elemDegree, sym("xi","real"), [-1 1]);
-ELEM = createElements(BSpline,bFun);
+ELEM = createElements(BSpline,bFun,EI);
 
 %% Construct linear system of equations
-K = stiffnessMatrix(ELEM,BSpline,"Exact");
+[K,k] = stiffnessMatrix(ELEM,BSpline,"Exact");
 F = forceVector(ELEM,BSpline,f,"Exact");
 
 %% Apply boundary conditions
@@ -54,7 +54,7 @@ F = forceVector(ELEM,BSpline,f,"Exact");
 
 %% Solve the system of equations
 d = K\F;
-d = [d(1:(BC.U.gNodeID-1)); BC.U.val; d(BC.U.gNodeID:end)];
+d = [d(1:(BC.U.gNodeID-1)); BC.U.val; BC.U.val; d(BC.U.gNodeID:end)];
 
 %% Assemble the solution
 [U,ELEM] = assembleSolution(ELEM,BSpline,d);
