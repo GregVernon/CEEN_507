@@ -103,11 +103,16 @@ for e = 1:nELEM
     if isInElement == true
         nLocalNodes = length(ELEM(e).LNodes);
         for n = 1:nLocalNodes
-            if n == idx || n == idx+1
+            if n == idx 
                 Nh = Ne(n);
                 Nh = symfun(Nh,symvar(Nh)); % Turn into symbolic function
-                mTerm = Nh(ELEM(e).LNodes(n)) * m * JAC;
-                F(BC.d2U.gNodeID) = F(BC.d2U.gNodeID) - mTerm;
+                mTerm = Nh(ELEM(e).LNodes(idx)) * m * JAC;
+                F(BC.d2U.gNodeID) = F(BC.d2U.gNodeID) + mTerm;
+            elseif n == idx-1
+                Nh = Ne(n);
+                Nh = symfun(Nh,symvar(Nh)); % Turn into symbolic function
+                mTerm = Nh(ELEM(e).LNodes(idx)) * m * JAC;
+                F(BC.d2U.gNodeID-1) = F(BC.d2U.gNodeID-1) + mTerm;
             end
         end
     end
