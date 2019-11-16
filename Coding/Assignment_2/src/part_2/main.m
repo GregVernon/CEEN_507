@@ -19,12 +19,15 @@ xMax = 1;
 % g = sym(1); 
 % h = sym(0.25);
 
-BC.U.location = x==0;
+BC.U.location = x == 0;
 BC.U.val = g;
+
 BC.dU.location = x == 0;
 BC.dU.val = h;
+
 BC.d2U.location = x == 1;
 BC.d2U.val = m;
+
 BC.d3U.location = x == 1;
 BC.d3U.val = q;
 
