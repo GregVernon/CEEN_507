@@ -2,12 +2,15 @@ function err = computeError(exactSolution, feResults, method)
 ELEM = feResults.Elements;
 nELEM = length(ELEM);
 
+x = sym('x');
 if method == "Exact"
     err = sym(0);
     for e = 1:nELEM
         C = feResults.Spline.decomposition.localExtractionOperator{e};
-        localExactSolution = exactSolution.U(ELEM(e).LocalVariate_to_GlobalVariate) * ELEM(e).Jacobian_Local_to_GlobalVariate;
         localApproxSolution = (C*ELEM(e).LBasisFuns)' * ELEM(e).LDOF;
+        localExactSolution = piecewise(ELEM(e).GDomain(1)<= x <= ELEM(e).GDomain(2), exactSolution.U);
+        localExactSolution = localExactSolution(ELEM(e).LocalVariate_to_GlobalVariate) * ELEM(e).Jacobian_Local_to_GlobalVariate;
+        
         elemErr = int((localExactSolution - localApproxSolution)^2 , ELEM(e).GDomain);
         err = err + elemErr;
     end
