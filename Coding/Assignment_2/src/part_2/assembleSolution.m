@@ -37,3 +37,4 @@ for e = 1:nElem
         end
     end
 end
+U = symfun(U,symvar(U));
