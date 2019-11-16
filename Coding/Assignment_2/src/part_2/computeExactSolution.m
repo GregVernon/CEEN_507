@@ -1,10 +1,10 @@
 function exactSolution = computeExactSolution(E,I,f,g,h,m,q)
 syms u(x)
-eqn = E*I*diff(u,x,4) - f == 0;
+eqn = diff(u,x,4) == f/(E*I);
 Du = diff(u,x);
-D2u = E*I*diff(u,x,2);
-D3u = E*I*diff(u,x,3);
-cond = [u(0)==g, Du(0)==h, D2u(1)==m, D3u(1)==q];
+D2u = diff(u,x,2);
+D3u = diff(u,x,3);
+cond = [u(0)==g, Du(0)==h, D2u(1)==m/(E*I), D3u(1)==q/(E*I)];
 U(x) = dsolve(eqn,cond);
 
 exactSolution.f = f;
