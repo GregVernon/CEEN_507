@@ -132,8 +132,8 @@ for e = 1:nELEM
             if n == idx
                 Nh = Ne(n);
                 Nh = symfun(Nh,symvar(Nh)); % Turn into symbolic function
-                qTerm = Nh(ELEM(e).LNodes(n)) * q * JAC;
                 F(BC.d3U.gNodeID) = F(BC.d3U.gNodeID) + qTerm;
+                qTerm = Nh(ELEM(e).LNodes(n)) * q;
             end
         end
     end
