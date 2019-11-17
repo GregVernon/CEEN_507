@@ -2,6 +2,7 @@ function err = computeError(exactSolution, feResults, method)
 ELEM = feResults.Elements;
 nELEM = length(ELEM);
 
+x = sym('x');
 if method == "Exact"
     err = sym(0);
     for e = 1:nELEM
