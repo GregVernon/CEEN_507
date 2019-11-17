@@ -55,9 +55,10 @@ function bFun = bernsteinBasis(p,variate,domain)
 node = linspace(domain(1), domain(2), p+1);
 xi = variate;
 
+scaleFactor = 1/((domain(2)-domain(1))^sym(p));
 for a=1:p+1
     binomialCoefficient = factorial(sym(p))/(factorial(sym(a)-1)*factorial(sym(p+1-a)));
-    B(a) = 1/(2^sym(p))*binomialCoefficient*(1-xi)^(sym(p-(a-1)))*(1+xi)^(sym(a)-1);
+    B(a) = scaleFactor * binomialCoefficient * (domain(2)-xi)^(sym(p-(a-1)))*(-domain(1)+xi)^(sym(a)-1);
 end
 
 bFun.name = "Bernstein";
