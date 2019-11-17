@@ -30,8 +30,12 @@ for e = 1:nElem
     NA = C{e}*ELEM(e).LBasisFuns;
     NA = NA(ELEM(e).GlobalVariate_to_LocalVariate);
     for n = 1:nLocalNodes
-        if n == 1
+        if n == 1 && e == nElem
+            U = piecewise(ELEM(e).GDomain(1)<=x<=ELEM(e).GDomain(2), ELEM(e).GDOF(n) * NA(n),U);
+        elseif n == 1
             U = piecewise(ELEM(e).GDomain(1)<=x<ELEM(e).GDomain(2), ELEM(e).GDOF(n) * NA(n),U);
+        elseif e == nElem
+            U = piecewise(ELEM(e).GDomain(1)<=x<=ELEM(e).GDomain(2), U + ELEM(e).GDOF(n) * NA(n),U);
         else
             U = piecewise(ELEM(e).GDomain(1)<=x<ELEM(e).GDomain(2), U + ELEM(e).GDOF(n) * NA(n),U);
         end
