@@ -76,8 +76,12 @@ classdef bspline
         end
         
         %% Greville Abscissae
-        function [obj,nodes] = computeGrevilleAbscissae(obj)
-            
+        function [obj,GAx] = computeGrevilleAbscissae(obj)
+            GAx = sym(zeros(size(obj.basis.functions)));
+            for a = 1:length(obj.basis.functions)
+                GAx(a) = 1/(obj.degree) * sum(obj.knotVector(a+1:a+obj.degree));
+            end
+            obj.nodes = GAx;
         end
             
         %% Bezier Extraction
