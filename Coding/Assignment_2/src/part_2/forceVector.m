@@ -33,7 +33,7 @@ elseif method == "GaussQuadrature"
     end
     f = sym(zeros(nLocalNodes,nELEM));
     for e = 1:nELEM
-        Ne = formula(ELEM(e).LBasisFuns);
+        Ne = C{e}*formula(ELEM(e).LBasisFuns);
         JAC = ELEM(e).Jacobian_Local_to_GlobalVariate;
         for A = 1:nLocalNodes
             NA = Ne(A);
@@ -47,9 +47,8 @@ end
 nGlobalNodes = max(max(eCONN));
 F = sym(zeros(nGlobalNodes, 1));
 for e = 1:nELEM
-    JAC = ELEM(e).Jacobian_Global_to_LocalVariate;
     for n = 1:nLocalNodes
         gID1 = eCONN(n,e);
-        F(gID1) = F(gID1) + f(n,e);%*JAC; %input local values into global force vector
+        F(gID1) = F(gID1) + f(n,e); %input local values into global force vector
     end
 end

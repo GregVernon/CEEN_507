@@ -49,11 +49,11 @@ bFun = basisFunction("Bernstein", elemDegree, sym("xi","real"), [-1 1]);
 ELEM = createElements(BSpline,bFun,EI);
 
 %% Construct linear system of equations
-[K,k] = stiffnessMatrix(ELEM,BSpline,"Exact");
-F = forceVector(ELEM,BSpline,f,"Exact");
+[K,k] = stiffnessMatrix(ELEM,BSpline,"GaussQuadrature");
+F = forceVector(ELEM,BSpline,f,"GaussQuadrature");
 
 %% Apply boundary conditions
-[K,F,BC] = boundaryConditions(K,F,BC,ELEM,BSpline,"Exact");
+[K,F,BC] = boundaryConditions(K,F,BC,ELEM,BSpline);
 
 %% Solve the system of equations
 d = K\F;

@@ -2,7 +2,12 @@ function result = numericalQuadrature(integrand, GQ)
 
 assert(strcmpi(class(integrand),'symfun'))
 
-nPoints = ceil((polynomialDegree(integrand)+1)/2);
+try 
+    nPoints = ceil((polynomialDegree(integrand)+1)/2);
+catch
+    % Non-polynomial integrand
+    nPoints = 3;  % Default
+end
 gqRule = nPoints == [GQ(:).nPoints];
 P = GQ(gqRule).P;
 W = GQ(gqRule).W;

@@ -40,14 +40,17 @@ elseif method == "GaussQuadrature"
     
     k = sym(zeros(nLocalNodes,nLocalNodes,nELEM));
     for e = 1:nELEM
+        BS = C{e}*ELEM(e).LBasisFuns;
+        BS = symfun(BS,symvar(BS));
+        d2BS = diff(BS,2);
+        d2NS = d2BS * ELEM(e).Jacobian_Local_to_GlobalVariate^(-2);
+        d2NS = formula(d2NS);
         for A = 1:nLocalNodes
-            d2NA = ELEM(e).LDerivBasisFuns(A);
-            d2NA = symfun(d2NA,sym("xi"));
+            d2NA = symfun(d2NS(A),symvar(BS));
             for B = 1:nLocalNodes
-                d2NB = ELEM(e).LDerivBasisFuns(B);
-                d2NB = symfun(d2NB,sym("xi"));
-                integrand = d2NA*d2NB;
-                k(A,B,e) = numericalQuadrature(integrand,GQ);
+                d2NB = symfun(d2NS(B),symvar(BS));
+                integrand = d2NA*d2NB*ELEM(e).G_EI;
+                k(A,B,e) = numericalQuadrature(integrand,GQ) * ELEM(e).Jacobian_Local_to_GlobalVariate;
             end
         end
     end
@@ -57,12 +60,11 @@ end
 nGlobalNodes = max(max(eCONN));
 K = sym(zeros(nGlobalNodes));
 for e = 1:nELEM
-    d2NS = ELEM(e).Jacobian_Global_to_LocalVariate;
     for n1 = 1:nLocalNodes
         for n2 = 1:nLocalNodes
             gID1 = eCONN(n1,e);
             gID2 = eCONN(n2,e);
-            K(gID1,gID2) = K(gID1,gID2) + k(n1,n2,e);%*JAC;
+            K(gID1,gID2) = K(gID1,gID2) + k(n1,n2,e);
         end
     end
 end
