@@ -1,10 +1,9 @@
-solutionType, Error, NumElements, ElementDegree, f, g, h
-Finite Element - Exact Integration,2.9714537372488620E-03,1,2,x^2,0,0
-Finite Element - Exact Integration,2.5983610733656525E-04,2,2,x^2,0,0
-Finite Element - Exact Integration,1.3515780286951099E-05,4,2,x^2,0,0
-Finite Element - Exact Integration,8.0621426272216332E-07,8,2,x^2,0,0
-Finite Element - Exact Integration,5.0303744170171059E-08,16,2,x^2,0,0
-Finite Element - Exact Integration,3.1528759170303227E-09,32,2,x^2,0,0
-Finite Element - Exact Integration,1.9744777986856326E-10,64,2,x^2,0,0
-Finite Element - Exact Integration,1.2354045328073848E-11,128,2,x^2,0,0
-Finite Element - Exact Integration,7.7256748131194875E-13,256,2,x^2,0,0
+solutionType, Error, NumElements, ElementDegree, Continuity, f, g, h
+Finite Element - Exact Integration,2.9714537372488620E-03,1,2,1,x^2,0,0
+Finite Element - Exact Integration,2.5983610733656525E-04,2,2,1,x^2,0,0
+Finite Element - Exact Integration,1.3515780286951099E-05,4,2,1,x^2,0,0
+Finite Element - Exact Integration,8.0621426272216332E-07,8,2,1,x^2,0,0
+Finite Element - Exact Integration,5.0303744170171059E-08,16,2,1,x^2,0,0
+Finite Element - Exact Integration,3.1528759170303227E-09,32,2,1,x^2,0,0
+Finite Element - Exact Integration,1.9744777986856326E-10,64,2,1,x^2,0,0
+Finite Element - Exact Integration,1.2354045328073848E-11,128,2,1,x^2,0,0
