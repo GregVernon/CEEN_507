@@ -3,6 +3,7 @@ function [K, F, BC] = boundaryConditions(K,F,BC,ELEM,BSpline)
 eCONN = BSpline.elementConnectivity;
 C = BSpline.decomposition.localExtractionOperator;
 nodes = BSpline.nodes;
+nELEM = length(C);
 
 % Create matrix of d variables
 nNodes = length(nodes);
