@@ -1,4 +1,4 @@
-function [K, F, BC] = boundaryConditions(K,F,BC,ELEM,BSpline,method)
+function [K, F, BC] = boundaryConditions(K,F,BC,ELEM,BSpline)
 % Extract information from B-Spline
 eCONN = BSpline.elementConnectivity;
 C = BSpline.decomposition.localExtractionOperator;
@@ -7,20 +7,6 @@ nodes = BSpline.nodes;
 % Create matrix of d variables
 nNodes = length(nodes);
 d = sym('d', [nNodes 1]);
-
-% Precompute Gauss Quadrature rules
-if method == "GaussQuadrature"
-    ii = 0;
-    for n = 9:-1:0
-        ii = ii+1;
-        [P,W] = Quadrature("Gauss-Legendre",n);
-        GQ(ii).P = P;
-        GQ(ii).W = W;
-        GQ(ii).nPoints = n;
-        GQ(ii).maxDegree = 2*n - 1;
-    end
-end
-nELEM = length(ELEM);
 
 % Define Dirichlet (traction) and Neumann (natural) BCs
 %% u(x) Boundary condition (g)
@@ -49,7 +35,7 @@ BC.d2U.gNodeID = find(isAlways(subs(mLoc,lhs(mLoc), nodes)));
 % Subtract the m terms from the F matrix
 for e = 1:nELEM
     Ne = C{e}*formula(ELEM(e).LDerivBasisFuns);
-    JAC = ELEM(e).Jacobian_Global_to_LocalVariate;
+    JAC = formula(ELEM(e).Jacobian_Global_to_LocalVariate);
     % Apply m
     [isInElement,idx] = ismember(BC.d2U.gNodeID,eCONN(:,e));
     if isInElement == true
