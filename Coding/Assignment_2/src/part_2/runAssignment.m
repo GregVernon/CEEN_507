@@ -52,7 +52,7 @@ for d = 2:3
     for continuity = 1:d-1
         fName = "P" + num2str(d) + "C" + num2str(continuity) + ".csv";
         fOut = fopen(fName,'w+');
-        fprintf(fOut,"%s\n","solutionType, Error, y(1),  NumElements, ElementDegree, Continuity, f, g, h, m, q, E, I");
+        fprintf(fOut,"%s\n","solutionType, Error, y(1),  NumElements, ElementDegree, Continuity, ndofs, nnodes, f, g, h, m, q, E, I");
         for n = 1:length(nELEM)
             iter = iter+1;
             disp("Iteration " + num2str(n) + " of " + num2str(length(nELEM)) + "; Number of Elements = " + num2str(nELEM(n)))
@@ -66,8 +66,10 @@ for d = 2:3
             Error = err;
             NumElements =  nELEM(n);
             ElementDegree = eDegree;
-            save("approx_"+num2str(iter)+".mat","feSolution", "solutionType", "Error", "NumElements", "ElementDegree", "continuity", "f", "g", "h", "m", "q", "E", "I");
-            fprintf(fOut,"%s,%.16E,%.16E,%d,%d,%d,%s,%s,%s,%s,%s,%s,%s\n",solutionType,Error,feSolution.U(1),NumElements,ElementDegree,continuity,string(f),string(g),string(h),string(m),string(q),string(E),string(I));
+            ndofs = length(feSolution.LinearSystem.F);
+            nnodes = length(feSolution.LinearSystem.d);
+            
+            fprintf(fOut,"%s,%.16E,%.16E,%d,%d,%d,%d,%d,%s,%s,%s,%s,%s,%s,%s\n",solutionType,Error,feSolution.U(1),NumElements,ElementDegree,continuity,ndofs,nnodes,string(f),string(g),string(h),string(m),string(q),string(E),string(I));
         end
         fclose("all");
     end
