@@ -1,9 +1,9 @@
 solutionType, Error, NumElements, ElementDegree, Continuity, f, g, h
 Finite Element - Exact Integration,2.9714537372488620E-03,1,2,0,x^2,0,0
-Finite Element - Exact Integration,2.5983610733656525E-04,2,2,0,x^2,0,0
-Finite Element - Exact Integration,1.3515780286951099E-05,4,2,0,x^2,0,0
-Finite Element - Exact Integration,8.0621426272216332E-07,8,2,0,x^2,0,0
-Finite Element - Exact Integration,5.0303744170171059E-08,16,2,0,x^2,0,0
-Finite Element - Exact Integration,3.1528759170303227E-09,32,2,0,x^2,0,0
-Finite Element - Exact Integration,1.9744777986856326E-10,64,2,0,x^2,0,0
-Finite Element - Exact Integration,1.2354045328073848E-11,128,2,0,x^2,0,0
+Finite Element - Exact Integration,2.2205535277853704E-04,2,2,0,x^2,0,0
+Finite Element - Exact Integration,1.3253342996559256E-05,4,2,0,x^2,0,0
+Finite Element - Exact Integration,8.1733544119149786E-07,8,2,0,x^2,0,0
+Finite Element - Exact Integration,5.0844435363285560E-08,16,2,0,x^2,0,0
+Finite Element - Exact Integration,3.1716206010370628E-09,32,2,0,x^2,0,0
+Finite Element - Exact Integration,1.9805298128198185E-10,64,2,0,x^2,0,0
+Finite Element - Exact Integration,1.2373188368891752E-11,128,2,0,x^2,0,0
