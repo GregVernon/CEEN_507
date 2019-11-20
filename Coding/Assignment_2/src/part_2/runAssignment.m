@@ -47,10 +47,10 @@ q = sym(0);
 
 
 nELEM = 2.^(0:7);
-for d = 2:3
-    eDegree = d;
-    for continuity = 1:d-1
-        fName = "P" + num2str(d) + "C" + num2str(continuity) + ".csv";
+for p = 2:3
+    eDegree = p;
+    for continuity = 1:p-1
+        fName = "P" + num2str(p) + "C" + num2str(continuity) + ".csv";
         fOut = fopen(fName,'w+');
         fprintf(fOut,"%s\n","solutionType, Error u(x), Error du(x), Error d2u(x), Error d3u(x), y(1),  NumElements, ElementDegree, Continuity, ndofs, nnodes, f, g, h, m, q, E, I");
         for n = 1:length(nELEM)
@@ -61,8 +61,8 @@ for d = 2:3
             feSolution = main(nELEM(n), eDegree, contVector, f, g, h, m, q, E*I);
             %         fplot(feSolution.U,[0 1])
             err = zeros(4,1);
-            for d = 0:3
-                err(d+1) = computeError(exactSolution, feSolution, "Exact",d);
+            for deriv = 0:3
+                err(deriv+1) = computeError(exactSolution, feSolution, "Exact",deriv);
             end
             
             solutionType = "Finite Element - Exact Integration";
