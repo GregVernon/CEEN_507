@@ -75,6 +75,15 @@ classdef bspline
             obj.basis.functions = simplify(N{end});
         end
         
+        %% Greville Abscissae
+        function [obj,GAx] = computeGrevilleAbscissae(obj)
+            GAx = sym(zeros(size(obj.basis.functions)));
+            for a = 1:length(obj.basis.functions)
+                GAx(a) = 1/(obj.degree) * sum(obj.knotVector(a+1:a+obj.degree));
+            end
+            obj.nodes = GAx;
+        end
+        
         %% Bezier Extraction
         function [obj,bez,T] = bezierExtraction(obj,method)
             if method == "Hughes"
