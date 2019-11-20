@@ -32,9 +32,9 @@ h = sym(0);
 
 
 nELEM = 2.^(0:7);
-for d = 1:3
+for d = 2:3
     eDegree = d;
-    for continuity = 0:d-1
+    for continuity = 1:d-1
         fName = "P" + num2str(d) + "C" + num2str(continuity) + ".csv";
         fOut = fopen(fName,'w+');
         fprintf(fOut,"%s\n","solutionType, Error u(x), Error du(x), Error d2u(x), Error d3u(x), y(1),  NumElements, ElementDegree, Continuity, ndofs, nnodes, f, g, h");
@@ -50,9 +50,12 @@ for d = 1:3
             end
             
             solutionType = "Finite Element - Exact Integration";
-            Error = err;
+            Error = double(err);
             NumElements =  nELEM(n);
             ElementDegree = eDegree;
+			ndofs = length(feSolution.LinearSystem.F);
+			nnodes = length(feSolution.LinearSystem.d);
+			
             save("approx_"+num2str(iter)+".mat","feSolution", "solutionType", "Error", "NumElements", "ElementDegree","continuity", "f", "g", "h");
             fprintf(fOut,"%s,%.16E,%.16E,%.16E,%.16E,%.16E,%d,%d,%d,%d,%d,%s,%s,%s\n",solutionType,Error(1),Error(2),Error(3),Error(4),feSolution.U(1),NumElements,ElementDegree,continuity,ndofs,nnodes,string(f),string(g),string(h));
         end
