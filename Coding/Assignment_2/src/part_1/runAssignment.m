@@ -9,8 +9,8 @@ g = sym(0);
 h = sym(0);
 
 exactSolution = computeExactSolution(f,g,h);
-hold on
-fplot(exactSolution.U,exactSolution.domain)
+% hold on
+% fplot(exactSolution.U,exactSolution.domain)
 
 solutionType = "Exact";
 Error = 0;
@@ -32,10 +32,10 @@ h = sym(0);
 
 
 nELEM = 2.^(0:7);
-for d = 2:3
-    eDegree = d;
-    for continuity = 1:d-1
-        fName = "P" + num2str(d) + "C" + num2str(continuity) + ".csv";
+for p = 2:3
+    eDegree = p;
+    for continuity = 1:p-1
+        fName = "P" + num2str(p) + "C" + num2str(continuity) + ".csv";
         fOut = fopen(fName,'w+');
         fprintf(fOut,"%s\n","solutionType, Error u(x), Error du(x), Error d2u(x), Error d3u(x), y(1),  NumElements, ElementDegree, Continuity, ndofs, nnodes, f, g, h");
         for n = 1:length(nELEM)
@@ -45,8 +45,9 @@ for d = 2:3
             elemContinuity = [-1 continuity*ones(1,nELEM(n)-1) -1];
             feSolution = main(nELEM(n),eDegree,elemContinuity,f,g,h);
             %         fplot(feSolution.U,[0 1])
-            for d = 0:3
-                err(d+1) = computeError(exactSolution, feSolution, "Exact",d);
+            err = zeros(4,1);
+            for deriv = 0:3
+                err(deriv+1) = computeError(exactSolution, feSolution, "Exact",deriv);
             end
             
             solutionType = "Finite Element - Exact Integration";
@@ -57,7 +58,7 @@ for d = 2:3
 			nnodes = length(feSolution.LinearSystem.d);
 			
             save("approx_"+num2str(iter)+".mat","feSolution", "solutionType", "Error", "NumElements", "ElementDegree","continuity", "f", "g", "h");
-            fprintf(fOut,"%s,%.16E,%.16E,%.16E,%.16E,%.16E,%d,%d,%d,%d,%d,%s,%s,%s\n",solutionType,Error(1),Error(2),Error(3),Error(4),feSolution.U(1),NumElements,ElementDegree,continuity,ndofs,nnodes,string(f),string(g),string(h));
+            fprintf(fOut,"%s,%.16E,%.16E,%.16E,%.16E,%.16E,%d,%d,%d,%d,%d,%s,%s,%s\n",solutionType,Error(1),Error(2),Error(3),Error(4),feSolution.U(0),NumElements,ElementDegree,continuity,ndofs,nnodes,string(f),string(g),string(h));
         end
         fclose('all');
     end
