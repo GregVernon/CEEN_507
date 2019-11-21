@@ -31,6 +31,9 @@ elseif method == "Gauss-Quadrature"
         end
         err = err + elemErr;
     end
+elseif method == "Exact-Global"
+    err = int((diff(exactSolution.U,derivativeOrder) - diff(feResults.U,derivativeOrder))^2,exactSolution.domain);
+end	
 end
 err = sqrt(err);
 end
