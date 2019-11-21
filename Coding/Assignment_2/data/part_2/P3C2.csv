@@ -1,4 +1,4 @@
-solutionType, Error u(x), Error du(x), Error d2u(x), Error d3u(x), y(1),  NumElements, ElementDegree, Continuity, ndofs, nnodes, f, g, h, m, q, E, I
+solutionType, Error u(x), Error du(x), Error d2u(x), Error d3u(x), y(1), NumElements, ElementDegree, Continuity, ndofs, nnodes, f, g, h, m, q, E, I
 Finite Element - Exact Integration,3.9840953644479788E-05,1.3801311186847085E-04,8.9442719099991591E-04,6.9282032302755096E-03,3.0000000000000001E-03,1,3,2,2,4,1/800000,0,0,0,0,1000000,1/19200000000
 Finite Element - Exact Integration,2.4900596027799868E-06,1.7251638983558856E-05,2.2360679774997898E-04,3.4641016151377548E-03,3.0000000000000001E-03,2,3,2,3,5,1/800000,0,0,0,0,1000000,1/19200000000
 Finite Element - Exact Integration,1.5562872517378552E-07,2.1564548729448570E-06,5.5901699437494744E-05,1.7320508075688774E-03,3.0000000000000001E-03,4,3,2,5,7,1/800000,0,0,0,0,1000000,1/19200000000
