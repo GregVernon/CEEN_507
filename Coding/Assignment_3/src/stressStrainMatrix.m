@@ -23,7 +23,7 @@ I2 = h * b^3 / 12;
 J = b * h * (b^2 + h^2) / 12;
 
 % Calculate the values of the diagonal terms of the D matrix
-d = [ E*A mu*A1^3 mu*A2^3 E*I1 E*I2 mu*J ];
+d = sym([ E*A mu*A1^3 mu*A2^3 E*I1 E*I2 mu*J ]);
 
 % Build the D matrix
 D = diag(d);
