@@ -33,6 +33,7 @@ for e = nELEM:-1:1
     ELEM(e).LBasisFuns(localVariate) = local_bFun.basis;
 	ELEM(e).LDerivBasisFuns(localVariate) = diff(ELEM(e).LBasisFuns(localVariate));
     ELEM(e).LInterpFun(localVariate) = local_bFun.basis' * ELEM(e).LNodes';
+    ELEM(e).L_D = strainDisplacementMatrix(symfun(ELEM(e).LBasisFuns));
 end
 
 % Create mappings ?(x) <-> x(?)
