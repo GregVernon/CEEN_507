@@ -10,19 +10,25 @@ bFun = ELEM(1).LbFun;
 nLocalNodes = bFun.degree + 1;
 if method == "Exact"
     % Exact integration method
-    k = sym(zeros(nLocalNodes,nLocalNodes,nELEM));
+    k = cell(nELEM,1);
     for e = 1:nELEM
         BS = C{e}*ELEM(e).LBasisFuns;
-        BS = symfun(BS,symvar(BS));
-        d2BS = diff(BS,2);
-        d2NS = d2BS * ELEM(e).Jacobian_Local_to_GlobalVariate^(-2);
-        d2NS = formula(d2NS);
+        N = formula(BS);
+        D = ELEM(e).G_D;
         for A = 1:nLocalNodes
-            d2NA = d2NS(A);
+            % Compute B_a
+            Na = N(A);
+            Ba = strainDisplacementMatrix(Na);
             for B = 1:nLocalNodes
-                d2NB = d2NS(B);
-                k(A,B,e) = int(d2NA*d2NB*ELEM(e).G_EI,ELEM(e).LDomain);
-                k(A,B,e) = k(A,B,e) * ELEM(e).Jacobian_Local_to_GlobalVariate;
+                % Compute B_b
+                Nb = N(B);
+                Bb = strainDisplacementMatrix(Nb);
+                
+                % Integrate
+                integrand = transpose(Ba) * D * Bb;
+                k{e}{A,B} = int(integrand,ELEM(e).LDomain);
+                k{e}{A,B} = k{e}{A,B} .* ELEM(e).Jacobian_Local_to_GlobalVariate;
+                k{e}{A,B} = formula(k{e}{A,B});
             end
         end
     end
@@ -57,14 +63,17 @@ elseif method == "GaussQuadrature"
 end
 
 % Assign the local nodes of each elemental stiffness matrix to a global ID
+nDOF = size(Ba,1);
 nGlobalNodes = max(max(eCONN));
-K = sym(zeros(nGlobalNodes));
+nodeDOFS = reshape(1:nGlobalNodes*nDOF,nDOF,nGlobalNodes);
+
+K = sym(zeros(nGlobalNodes*nDOF));
 for e = 1:nELEM
     for n1 = 1:nLocalNodes
         for n2 = 1:nLocalNodes
-            gID1 = eCONN(n1,e);
-            gID2 = eCONN(n2,e);
-            K(gID1,gID2) = K(gID1,gID2) + k(n1,n2,e);
+            gIDa = nodeDOFS(:,eCONN(n1,e));
+            gIDb = nodeDOFS(:,eCONN(n2,e));
+            K(gIDa,gIDb) = K(gIDa,gIDb) + k{e}{n1,n2};
         end
     end
 end

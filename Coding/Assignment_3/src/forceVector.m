@@ -10,14 +10,14 @@ bFun = ELEM(1).LbFun;
 nLocalNodes = bFun.degree + 1;
 if method == "Exact"
     % Exact integration method
-    f = sym(zeros(nLocalNodes,nELEM));
+    f = cell(nELEM,1);
     for e = 1:nELEM
         Ne = C{e}*formula(ELEM(e).LBasisFuns);
         JAC = ELEM(e).Jacobian_Local_to_GlobalVariate;
         for A = 1:nLocalNodes
             NA = Ne(A);
             NA = symfun(NA,symvar(NA));
-            f(A,e) = int(NA * fun(ELEM(e).LocalVariate_to_GlobalVariate)*JAC, ELEM(e).LDomain);
+            f{e}{A} = int(NA * fun(ELEM(e).LocalVariate_to_GlobalVariate)*JAC, ELEM(e).LDomain);
         end
     end
 elseif method == "GaussQuadrature"
@@ -44,11 +44,14 @@ elseif method == "GaussQuadrature"
     end
 end
 
+nDOF = size(formula(fun),1);
 nGlobalNodes = max(max(eCONN));
-F = sym(zeros(nGlobalNodes, 1));
+nodeDOFS = reshape(1:nGlobalNodes*nDOF,nDOF,nGlobalNodes);
+
+F = sym(zeros(nGlobalNodes*nDOF, 1));
 for e = 1:nELEM
     for n = 1:nLocalNodes
-        gID1 = eCONN(n,e);
-        F(gID1) = F(gID1) + f(n,e); %input local values into global force vector
+        gID1 = nodeDOFS(:,eCONN(n,e));
+        F(gID1) = F(gID1) + f{e}{n}; %input local values into global force vector
     end
 end

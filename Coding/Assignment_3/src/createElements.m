@@ -1,4 +1,4 @@
-function ELEM = createElements(BSpline,local_bFun,EI)
+function ELEM = createElements(BSpline,local_bFun, base, height, E, nu, shearCorrection)
 % Extract information from B-Spline
 eCONN = BSpline.decomposition.spline.elementConnectivity;
 nodes = BSpline.decomposition.spline.nodes;
@@ -21,7 +21,7 @@ for e = nELEM:-1:1
     ELEM(e).GbFun = global_bFun;
     ELEM(e).GBasisFuns(globalVariate) = global_bFun.basis;
     ELEM(e).GInterpFun(globalVariate) = global_bFun.basis' * ELEM(e).GNodes;
-    ELEM(e).G_EI = EI;
+    ELEM(e).G_D = stressStrainMatrix(base, height, E, nu, shearCorrection);
 end
 
 % Create Local Definitions
@@ -33,7 +33,6 @@ for e = nELEM:-1:1
     ELEM(e).LBasisFuns(localVariate) = local_bFun.basis;
 	ELEM(e).LDerivBasisFuns(localVariate) = diff(ELEM(e).LBasisFuns(localVariate));
     ELEM(e).LInterpFun(localVariate) = local_bFun.basis' * ELEM(e).LNodes';
-    ELEM(e).L_D = strainDisplacementMatrix(symfun(ELEM(e).LBasisFuns));
 end
 
 % Create mappings ?(x) <-> x(?)

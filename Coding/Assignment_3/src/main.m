@@ -19,11 +19,11 @@ C = BSpline.decomposition.localExtractionOperator;
 
 % Create the local basis functions
 bFun = basisFunction("Bernstein", elemDegree, sym("xi","real"), [-1 1]);
-ELEM = createElements(BSpline,bFun,EI);
+ELEM = createElements(BSpline, bFun, base, height, E, nu, shearCorrection);
 
 %% Construct linear system of equations
-[K,k] = stiffnessMatrix(ELEM,BSpline,"GaussQuadrature");
-F = forceVector(ELEM,BSpline,f,"GaussQuadrature");
+[K,k] = stiffnessMatrix(ELEM,BSpline,"Exact");
+F = forceVector(ELEM,BSpline,f,"Exact");
 
 %% Apply boundary conditions
 [K,F,BC] = boundaryConditions(K,F,BC,ELEM,BSpline);
