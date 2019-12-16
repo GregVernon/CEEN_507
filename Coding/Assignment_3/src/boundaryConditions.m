@@ -5,94 +5,56 @@ C = BSpline.decomposition.localExtractionOperator;
 nodes = BSpline.nodes;
 nELEM = length(C);
 
+
+% Node->DOF mapping
+DOFS = fieldnames(BC);
+nDOF = length(DOFS);
+nGlobalNodes = max(max(eCONN));
+nodeDOFS = reshape(1:nGlobalNodes*nDOF,nDOF,nGlobalNodes);
+
 % Create matrix of d variables
-nNodes = length(nodes);
-d = sym('d', [nNodes 1]);
+nGlobalNodes = length(nodes);
+d = sym('d', [max(nodeDOFS(:)) 1]);
 
 % Define Dirichlet (traction) and Neumann (natural) BCs
-%% u(x) Boundary condition (g)
-% Extract info for "g" (solution BC)
-g = BC.U.val;
-gLoc = BC.U.location;
-% gNodeID -> Global Node ID
-BC.U.gNodeID = find(isAlways(subs(gLoc,lhs(gLoc), nodes)));
-
-
-%% u'(x) Boundary Condition (h)
-% Extract info for "h" (derivative of solution BC)
-h = BC.dU.val;
-hLoc = BC.dU.location;
-% gNodeID -> Global Node ID
-BC.dU.gNodeID = find(isAlways(subs(hLoc,lhs(hLoc), nodes)));
-
-
-%% u''(x) Boundary Condition (m)
-% Extract info for "m" (2nd derivative of solution BC)
-m = BC.d2U.val;
-mLoc = BC.d2U.location;
-% gNodeID -> Global Node ID
-BC.d2U.gNodeID = find(isAlways(subs(mLoc,lhs(mLoc), nodes)));
-
-% Subtract the m terms from the F matrix
-for e = 1:nELEM
-    Ne = C{e}*formula(ELEM(e).LDerivBasisFuns);
-    JAC = formula(ELEM(e).Jacobian_Global_to_LocalVariate);
-    % Apply m
-    [isInElement,idx] = ismember(BC.d2U.gNodeID,eCONN(:,e));
-    if isInElement == true
-        nLocalNodes = length(ELEM(e).LNodes);
-        for n = 1:nLocalNodes
-            if n == idx 
-                Nh = Ne(n);
-                Nh = symfun(Nh,symvar(Nh)); % Turn into symbolic function
-                mTerm = Nh(ELEM(e).LNodes(idx)) * m * JAC;
-                F(BC.d2U.gNodeID) = F(BC.d2U.gNodeID) + mTerm;
-            elseif n == idx-1
-                Nh = Ne(n);
-                Nh = symfun(Nh,symvar(Nh)); % Turn into symbolic function
-                mTerm = Nh(ELEM(e).LNodes(idx)) * m * JAC;
-                F(BC.d2U.gNodeID-1) = F(BC.d2U.gNodeID-1) + mTerm;
-            end
-        end
-    end
+%% Dirchlet BCs ( u(x), v(x), w(x) )
+for ii = 1:3
+    val = BC.(DOFS{ii}).val;
+    Loc = BC.(DOFS{ii}).location;
+    BC.(DOFS{ii}).globalNodeID = find(isAlways(subs(Loc,lhs(Loc), nodes)));
+    BC.(DOFS{ii}).globalDOF = nodeDOFS(ii,BC.(DOFS{ii}).globalNodeID);
 end
 
-%% u'''(x) Boundary Condition (q)
-% Extract info for "q" (3rd derivative of solution BC)
-q = BC.d3U.val;
-qLoc = BC.d3U.location;
-% gNodeID -> Global Node ID
-BC.d3U.gNodeID = find(isAlways(subs(qLoc,lhs(qLoc), nodes)));
-
-% Subtract the m terms from the F matrix
-for e = 1:nELEM
-    Ne = C{e}*formula(ELEM(e).LBasisFuns);
-    JAC = ELEM(e).Jacobian_Global_to_LocalVariate;
-    % Apply q
-    [isInElement,idx] = ismember(BC.d3U.gNodeID,eCONN(:,e));
-    if isInElement == true
-        nLocalNodes = length(ELEM(e).LNodes);
-        for n = 1:nLocalNodes
-            if n == idx
-                Nh = Ne(n);
-                Nh = symfun(Nh,symvar(Nh)); % Turn into symbolic function
-                qTerm = Nh(ELEM(e).LNodes(n)) * q;
-                F(BC.d3U.gNodeID) = F(BC.d3U.gNodeID) - qTerm;
-            end
-        end
+%% Neumann BCs ( u'(x), v'(x), w'(x) )
+for ii = 4:6
+    val = BC.(DOFS{ii}).val;
+    Loc = BC.(DOFS{ii}).location;
+    BC.(DOFS{ii}).globalNodeID = find(isAlways(subs(Loc,lhs(Loc), nodes)));
+    if BC.(DOFS{ii}).globalNodeID == 1
+        BC.(DOFS{ii}).globalNodeID = [BC.(DOFS{ii}).globalNodeID BC.(DOFS{ii}).globalNodeID+1];
+    elseif BC.(DOFS{ii}).globalNodeID == nGlobalNodes
+        BC.(DOFS{ii}).globalNodeID = [BC.(DOFS{ii}).globalNodeID-1 BC.(DOFS{ii}).globalNodeID];
+    else
+        BC.(DOFS{ii}).globalNodeID = [BC.(DOFS{ii}).globalNodeID-1 BC.(DOFS{ii}).globalNodeID BC.(DOFS{ii}).globalNodeID+1];
     end
+    
+    BC.(DOFS{ii}).globalDOF = nodeDOFS(ii,BC.(DOFS{ii}).globalNodeID);
+    BC.(DOFS{ii}).val(1:length(BC.(DOFS{ii}).globalDOF)) = val;
 end
+
 %% Update linear system structure
-% Remove the gNode terms from the linear system
+% Remove the Dirichlet terms from the linear system
+globalDOF = cell2mat(struct2cell(BC));
+globalDOF = [globalDOF.globalDOF];
 % Stiffness Matrix
-K([BC.U.gNodeID BC.U.gNodeID+1],:) = [];
-K(:,[BC.U.gNodeID BC.U.gNodeID+1]) = [];
+K([globalDOF],:) = [];
+K(:,[globalDOF]) = [];
 
 % Force Vector
-F([BC.U.gNodeID BC.U.gNodeID+1]) = [];
+F([globalDOF]) = [];
 
 % Solution / Unknowns Vector
-d([BC.U.gNodeID BC.U.gNodeID+1]) = [];
+d([globalDOF]) = [];
 
 % Define the Kd=F relationship
 K * d == F;
