@@ -26,7 +26,7 @@ ELEM = createElements(BSpline, bFun, base, height, E, nu, shearCorrection);
 F = forceVector(ELEM,BSpline,f,"Exact");
 
 %% Apply boundary conditions
-[K,F,BC] = boundaryConditions(K,F,BC,ELEM,BSpline);
+[K,F,BC] = boundaryConditions(K,F,BC,ELEM,BSpline,"Exact");
 
 %% Solve the system of equations
 d = K\F;
