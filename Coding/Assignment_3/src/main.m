@@ -33,7 +33,7 @@ d = K\F;
 % d = [d(1:(BC.U.gNodeID-1))+BC.U.val; BC.U.val; BC.U.val; d(BC.U.gNodeID:end)+BC.U.val];
 
 %% Assemble the solution
-[U,ELEM] = assembleSolution(ELEM,BSpline,BC,d);
+[U,ELEM,d] = assembleSolution(ELEM,BSpline,BC,d);
 
 %% Output results
 feSolution.Elements = ELEM;

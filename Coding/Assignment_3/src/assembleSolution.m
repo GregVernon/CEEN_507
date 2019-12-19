@@ -1,4 +1,4 @@
-function [U,ELEM] = assembleSolution(ELEM,BSpline,BC,solutionVector)
+function [U,ELEM,d] = assembleSolution(ELEM,BSpline,BC,solutionVector)
 % Extract information from BSpline
 eCONN = BSpline.elementConnectivity;
 C = BSpline.decomposition.localExtractionOperator;
