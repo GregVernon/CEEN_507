@@ -217,4 +217,49 @@ classdef bspline
             obj.nodes = unique([splineNodes{:}]);
         end
     end
+    
+    % Plotting methods
+    methods
+        function plotBasisFunctions(obj)
+            obj.plotKnotVector()
+            hold on
+            bFuns = obj.basis.functions;
+            for b = 1:length(bFuns)
+                funParts = children(bFuns(b));
+                functions = funParts(1:end-1,1);
+                conditions = funParts(1:end-1,2);
+                domains = children(conditions);
+                if iscell(domains)
+                    domains = cell2sym(domains);
+                end
+                dMin = inf;
+                dMax = -inf;
+                for ii = 1:size(domains,1)
+                    cDomain = domains(ii,2);
+                    cDomain = vpa(cDomain);
+                    cDomain = children(cDomain);
+                    dTest = double(vpa(cDomain(1)));
+                    if dTest < dMin
+                        dMin = double(vpa(cDomain(1)));
+                    end
+                    dTest = double(vpa(cDomain(2)));
+                    if dTest > dMax
+                        dMax = double(vpa(cDomain(2)));
+                    end
+                end
+                fplot(bFuns(b),[dMin dMax-(1e-12)],'LineWidth',6,'MeshDensity',1e2)
+            end
+        end
+        
+        function plotKnotVector(obj)
+            hold on;
+            for ii = 1:length(obj.uniqueKnotsVector)
+                xl(ii) = xline(double(obj.uniqueKnotsVector(ii)));
+                xl(ii).Color = [.25 .25 .25];
+                xl(ii).LineStyle = '--';
+                xl(ii).LineWidth = 0.5;
+            end
+            hold off;
+        end
+    end
 end

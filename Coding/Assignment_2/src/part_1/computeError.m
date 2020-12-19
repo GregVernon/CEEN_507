@@ -12,7 +12,7 @@ if method == "Exact"
         localExactSolution = localExactSolution(ELEM(e).LocalVariate_to_GlobalVariate) * ELEM(e).Jacobian_Local_to_GlobalVariate;
         
         elemErr = int((diff(localExactSolution,derivativeOrder) - diff(localApproxSolution,derivativeOrder))^2 , ELEM(e).GDomain);
-        err = err + elemErr;
+        err = err + abs(elemErr);
     end
 elseif method == "Gauss-Quadrature"
     err = sym(0);
@@ -29,7 +29,7 @@ elseif method == "Gauss-Quadrature"
         for ii = 1:length(P)
             elemErr = elemErr + W(ii) * errFun(P(ii));
         end
-        err = err + elemErr;
+        err = err + abs(elemErr);
     end
 elseif method == "Exact-Global"
     err = int((diff(exactSolution.U,derivativeOrder) - diff(feResults.U,derivativeOrder))^2,exactSolution.domain);

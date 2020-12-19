@@ -1,7 +1,15 @@
-function ELEM = createElements(BSpline,local_bFun)
+function ELEM = createElements(BSpline, local_bFun, interpBasis)
 % Extract information from B-Spline
 eCONN = BSpline.decomposition.spline.elementConnectivity;
 nodes = BSpline.decomposition.spline.nodes;
+
+if interpBasis == true
+    assert(max(BSpline.continuityVector) == 0);
+    B = basisFunction("Bernstein",BSpline.degree,sym('xi'),[-1 1]);
+    L = basisFunction("Lagrange", BSpline.degree,sym('xi'),[-1 1]);
+    B2L = basisTransform(L,B);
+    local_bFun.basis = B2L .* local_bFun.basis;
+end
 
 % Get information about local basis function
 Family = local_bFun.name;
@@ -44,12 +52,4 @@ for e = nELEM:-1:1
     ELEM(e).Jacobian_Local_to_GlobalVariate = diff(x_xi);
 end
 
-end
-
-function F = computeAffineMapping(TargetSpace, Preimage, Domain)
-A = [1 Preimage(1); 1 Preimage(2)];
-b = [TargetSpace(1); TargetSpace(2)];
-c = A\b;
-
-F(Domain) = c(1) + c(2)*Domain;
 end

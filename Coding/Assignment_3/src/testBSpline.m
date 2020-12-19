@@ -1,7 +1,7 @@
 clear
 
 splineSpace.degree = 4;
-splineSpace.nodes = [0 1 2 3 4 5];
+splineSpace.uniqueKnotsVector = [0 1 2 3 4 5];
 splineSpace.continuityVector = [-1 3 2 1 0 -1];
 
 b = bspline(splineSpace);

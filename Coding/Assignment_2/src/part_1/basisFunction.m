@@ -59,11 +59,14 @@ for a=1:p+1
     binomialCoefficient = factorial(sym(p))/(factorial(sym(a)-1)*factorial(sym(p+1-a)));
     B(a) = 1/(2^sym(p))*binomialCoefficient*(1-xi)^(sym(p-(a-1)))*(1+xi)^(sym(a)-1);
 end
+x(xi) = (2 / (domain(2)-domain(1))) * xi + (-1 + domain(1));
+B = symfun(transpose(B),variate);
+B = B(x);
 
 bFun.name = "Bernstein";
 bFun.degree = p;
 bFun.variate = variate;
 bFun.domain = domain;
 bFun.nodes = node;
-bFun.basis = symfun(transpose(B),variate);
+bFun.basis = B;
 end

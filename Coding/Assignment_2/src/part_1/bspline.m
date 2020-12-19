@@ -178,7 +178,7 @@ classdef bspline
             N_conditions = cell(length(N),1);
             for ii = 1:length(N)
                 N_parts = children(N(ii));
-                N_conditions{ii} = N_parts(1:end-1,2);
+                N_conditions{ii} = [N_parts{1:end-1,2}];
             end
             
             % Step 3: For each B-Spline reference (C^0) element (knot span)
